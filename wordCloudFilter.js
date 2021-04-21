@@ -245,5 +245,31 @@ function main(arguments) {
 		checkingUp(wordsData);
 	}
 	console.log(wordsData);
+	var exportdata = {};
+
+	class WordExport {
+		constructor(color, count, horz, rotation, size, vert, word) {
+			this.color = color;
+			this.horz = horz;
+			this.rotation = rotation;
+			this.size = size;
+			this.vert = vert;
+			this.word = word;
+		}
+	}
+
+	wordsData.forEach((el, index) => {
+		var wordExport = new WordExport();
+		exportdata['Word' + index] = wordExport;
+		exportdata['Word' + index].word = el.word;
+		exportdata['Word' + index].horz = el.x;
+		exportdata['Word' + index].vert = el.y;
+		exportdata['Word' + index].size = el.fontSize;
+	});
+	var exportdataStringified = JSON.stringify(exportdata);
+
+	console.log('this is exportdata', exportdataStringified);
+
+	return exportdataStringified;
 }
 main(['first Input']);
