@@ -97,12 +97,16 @@
 var wordsData = [];
 
 function main(arguments) {
+	// Set up
 	var screenSize = [1920, 1080];
 	var currentWord = arguments[0];
-	var translationRatio = 10;
+	var translationRatio = 20;
 	var translationX = screenSize[0] / translationRatio;
 	var translationY = screenSize[1] / translationRatio;
 	var numberOfWordsCounted = 0;
+	var exportdataStringified;
+	var translationDone = 0;
+	var translationMode;
 
 	class WordClassElement {
 		constructor(word, fontSize, fontRatio, kerning, x, y) {
@@ -113,16 +117,15 @@ function main(arguments) {
 			this.kerning = kerning;
 			this.width = this.wordLength * this.fontSize * this.fontRatio;
 			this.height = this.fontSize;
-			// this.x = 1000;
-			// this.y = 1000;
 			this.x = this.randomPosition(
-				screenSize[0] * 0.25,
-				screenSize[0] * 0.75
+				screenSize[0] * 0.3,
+				screenSize[0] * 0.7
 			);
 			this.y = this.randomPosition(
-				screenSize[1] * 0.25,
-				screenSize[1] * 0.75
+				screenSize[1] * 0.3,
+				screenSize[1] * 0.7
 			);
+
 			this.xMinMax = [this.x, this.x + this.width];
 			this.yMinMax = [this.y, this.y + this.height];
 		}
@@ -131,49 +134,39 @@ function main(arguments) {
 		}
 	}
 
-	// Setting up new object
-	var wordInput = new WordClassElement(currentWord, 12, 0.5, 0, 1000, 500);
-
-	// Function checking & adding word data
-	if (wordsData.length === 0) {
-		wordsData.push(wordInput);
-	} else {
-		checkingUp(wordsData);
-	}
+	// Setting up new input word object
+	var wordInput = new WordClassElement(currentWord, 18, 0.5, 0, 1000, 500);
 
 	// Function placing checking by other components position
-	var translationDone;
-	function checkingUp(data) {
-		// Translations mode (1left, 2Right, 3Up, 4Bottom)
+	// Generating random translation mode
 
-		var translationMode;
-		function getRandom(min, max) {
-			return Math.floor(Math.random() * (max - min) + min);
-		}
-		translationMode = getRandom(2, 6);
+	function checkingUp(data) {
 		console.log('this is translationMode:', translationMode);
-		findingPosition();
+		// Translations mode (1left, 2Right, 3Up, 4Bottom)
 		// Translation Left - 1
 		function findingPosition() {
+			function getRandom(min, max) {
+				return Math.floor(Math.random() * (max - min) + min);
+			}
+			translationMode = getRandom(1, 5);
+			console.log('translationMode:', translationMode);
 			if (
 				translationMode === 1 &&
 				!translationDone &&
-				data.every(
-					(el) => el.xMinMax[0] >= wordInput.xMinMax[1] - translationX
-				) &&
 				(data.every(
-					(el) => el.yMinMax[1] <= wordInput.yMinMax[0] - translationX
+					(el) => el.xMinMax[0] > wordInput.xMinMax[1] - translationX
 				) ||
 					data.every(
 						(el) =>
-							el.yMinMax[0] >= wordInput.yMinMax[1] - translationX
-					))
+							el.xMinMax[1] < wordInput.xMinMax[1] - translationX
+					)) &&
+				(data.every((el) => el.yMinMax[1] < wordInput.yMinMax[0]) ||
+					data.every((el) => el.yMinMax[0] > wordInput.yMinMax[1]))
 			) {
-				console.log('mode1 true - before wordInput.x:', wordInput.x);
-				var test1 = wordInput.x - translationX;
-				console.log('mode1 true - wordInput.x - translationX:', test1);
 				wordInput.x = wordInput.x - translationX;
-				console.log('mode1 true - after wordInput.x:', wordInput.x);
+				wordInput.xMinMax[0] = wordInput.xMinMax[0] - translationX;
+				wordInput.xMinMax[1] = wordInput.xMinMax[1] - translationX;
+
 				translationDone = 1;
 				data.push(wordInput);
 			}
@@ -181,22 +174,20 @@ function main(arguments) {
 			if (
 				translationMode === 2 &&
 				!translationDone &&
-				data.every(
-					(el) => el.xMinMax[1] <= wordInput.xMinMax[0] + translationX
-				) &&
 				(data.every(
-					(el) => el.yMinMax[1] <= wordInput.yMinMax[0] + translationX
+					(el) => el.xMinMax[1] < wordInput.xMinMax[0] + translationX
 				) ||
 					data.every(
 						(el) =>
-							el.yMinMax[0] >= wordInput.yMinMax[1] + translationX
-					))
+							el.xMinMax[1] < wordInput.xMinMax[1] + translationX
+					)) &&
+				(data.every((el) => el.yMinMax[1] < wordInput.yMinMax[0]) ||
+					data.every((el) => el.yMinMax[0] > wordInput.yMinMax[1]))
 			) {
-				console.log('mode2 true - before wordInput.x:', wordInput.x);
-				var test2 = wordInput.x - translationX;
-				console.log('mode2 true - wordInput.x - translationX:', test2);
 				wordInput.x = wordInput.x + translationX;
-				console.log('mode2 true - after wordInput.x:', wordInput.x);
+				wordInput.xMinMax[0] = wordInput.xMinMax[0] + translationX;
+				wordInput.xMinMax[1] = wordInput.xMinMax[1] + translationX;
+
 				translationDone = 1;
 				data.push(wordInput);
 			}
@@ -204,22 +195,20 @@ function main(arguments) {
 			if (
 				translationMode === 3 &&
 				!translationDone &&
-				data.every(
-					(el) => el.yMinMax[1] <= wordInput.yMinMax[0] + translationY
-				) &&
 				(data.every(
-					(el) => el.xMinMax[1] <= wordInput.xMinMax[0] + translationY
+					(el) => el.yMinMax[1] < wordInput.yMinMax[0] + translationY
 				) ||
 					data.every(
 						(el) =>
-							el.xMinMax[0] >= wordInput.xMinMax[1] + translationY
-					))
+							el.yMinMax[0] > wordInput.yMinMax[1] + translationY
+					)) &&
+				(data.every((el) => el.xMinMax[1] < wordInput.xMinMax[0]) ||
+					data.every((el) => el.xMinMax[0] > wordInput.xMinMax[1]))
 			) {
-				console.log('mode3 true - before wordInput.t:', wordInput.y);
-				var test3 = wordInput.y - translationY;
-				console.log('mode3 true - wordInput.y - translationY:', test3);
 				wordInput.y = wordInput.y + translationY;
-				console.log('mode3 true - after wordInput.t:', wordInput.y);
+				wordInput.yMinMax[0] = wordInput.yMinMax[0] + translationY;
+				wordInput.yMinMax[1] = wordInput.yMinMax[1] + translationY;
+
 				translationDone = 1;
 				data.push(wordInput);
 			}
@@ -227,59 +216,81 @@ function main(arguments) {
 			if (
 				translationMode === 4 &&
 				!translationDone &&
-				data.every(
-					(el) => el.yMinMax[0] >= wordInput.yMinMax[1] - translationY
-				) &&
 				(data.every(
-					(el) => el.xMinMax[1] <= wordInput.xMinMax[0] - translationY
+					(el) => el.yMinMax[1] < wordInput.yMinMax[0] - translationY
 				) ||
 					data.every(
 						(el) =>
-							el.xMinMax[0] >= wordInput.xMinMax[1] - translationY
-					))
+							el.yMinMax[0] > wordInput.yMinMax[1] - translationY
+					)) &&
+				(data.every((el) => el.xMinMax[1] < wordInput.xMinMax[0]) ||
+					data.every((el) => el.xMinMax[0] > wordInput.xMinMax[1]))
 			) {
-				console.log('mode4 true - before wordInput.y:', wordInput.y);
-				var test4 = wordInput.y - translationY;
-				console.log('mode4 true - wordInput.y - translationY:', test4);
 				wordInput.y = wordInput.y - translationY;
-				console.log('mode4 true - after wordInput.y:', wordInput.y);
+
+				wordInput.yMinMax[0] = wordInput.yMinMax[0] - translationY;
+				wordInput.yMinMax[1] = wordInput.yMinMax[1] - translationY;
+
 				translationDone = 1;
 				data.push(wordInput);
 			}
-		}
+			if (!translationDone) {
+				translationRatio = translationRatio - 5;
+				findingPosition();
+			}
+			if (translationDone) {
+				var exportdata = {};
+				class WordExport {
+					constructor(
+						color,
+						count,
+						horz,
+						rotation,
+						size,
+						vert,
+						word
+					) {
+						this.color = color;
+						this.horz = horz;
+						this.rotation = rotation;
+						this.size = size;
+						this.vert = vert;
+						this.word = word;
+					}
+				}
 
+				wordsData.forEach((el, index) => {
+					var wordExport = new WordExport();
+					exportdata['Word' + index] = wordExport;
+					exportdata['Word' + index].word = el.word;
+					exportdata['Word' + index].horz = el.x;
+					exportdata['Word' + index].vert = el.y;
+					exportdata['Word' + index].size = el.fontSize;
+				});
+				exportdataStringified = JSON.stringify(exportdata);
+			}
+		}
+		findingPosition();
 		if (!translationDone) {
-			translationRatio = translationRatio - 1;
-			findingPosition();
+			console.log('translation did not work :(');
 		} else {
 			console.log('translation has been processed :)');
-			class WordExport {
-				constructor(color, count, horz, rotation, size, vert, word) {
-					this.color = color;
-					this.horz = horz;
-					this.rotation = rotation;
-					this.size = size;
-					this.vert = vert;
-					this.word = word;
-				}
-			}
-
-			wordsData.forEach((el, index) => {
-				var wordExport = new WordExport();
-				exportdata['Word' + index] = wordExport;
-				exportdata['Word' + index].word = el.word;
-				exportdata['Word' + index].horz = el.x;
-				exportdata['Word' + index].vert = el.y;
-				exportdata['Word' + index].size = el.fontSize;
-			});
-			var exportdataStringified = JSON.stringify(exportdata);
 		}
 	}
+	// Function checking & adding word data
+	if (wordsData.length === 0) {
+		wordsData.push(wordInput);
+		translationDone = 1;
+	}
+
+	if (wordsData.length >= 1) {
+		checkingUp(wordsData);
+	}
+
 	console.log(wordsData);
-	var exportdata = {};
 
 	var display = [];
-	if (translationDone) {
+	if (translationDone === 1) {
 		display = [
 			arguments[0],
 			arguments[1],
@@ -288,7 +299,8 @@ function main(arguments) {
 			exportdataStringified,
 			arguments[4],
 		];
+		translationDone = 0;
+		return display;
 	}
-	return display;
 }
 main(['first Input']);
