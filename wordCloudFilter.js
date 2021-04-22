@@ -102,6 +102,7 @@ function main(arguments) {
 	var translationRatio = 10;
 	var translationX = screenSize[0] / translationRatio;
 	var translationY = screenSize[1] / translationRatio;
+	var numberOfWordsCounted = 0;
 
 	class WordClassElement {
 		constructor(word, fontSize, fontRatio, kerning, x, y) {
@@ -144,132 +145,150 @@ function main(arguments) {
 	var translationDone;
 	function checkingUp(data) {
 		// Translations mode (1left, 2Right, 3Up, 4Bottom)
+
 		var translationMode;
 		function getRandom(min, max) {
 			return Math.floor(Math.random() * (max - min) + min);
 		}
 		translationMode = getRandom(2, 6);
 		console.log('this is translationMode:', translationMode);
-
+		findingPosition();
 		// Translation Left - 1
-		if (
-			translationMode === 1 &&
-			!translationDone &&
-			data.every(
-				(el) => el.xMinMax[0] >= wordInput.xMinMax[1] - translationX
-			) &&
-			(data.every(
-				(el) => el.yMinMax[1] <= wordInput.yMinMax[0] - translationX
-			) ||
+		function findingPosition() {
+			if (
+				translationMode === 1 &&
+				!translationDone &&
 				data.every(
-					(el) => el.yMinMax[0] >= wordInput.yMinMax[1] - translationX
-				))
-		) {
-			console.log('mode1 true - before wordInput.x:', wordInput.x);
-			var test1 = wordInput.x - translationX;
-			console.log('mode1 true - wordInput.x - translationX:', test1);
-			wordInput.x = wordInput.x - translationX;
-			console.log('mode1 true - after wordInput.x:', wordInput.x);
-			translationDone = 1;
-			data.push(wordInput);
-		}
-		// Translation Right - 2
-		if (
-			translationMode === 2 &&
-			!translationDone &&
-			data.every(
-				(el) => el.xMinMax[1] <= wordInput.xMinMax[0] + translationX
-			) &&
-			(data.every(
-				(el) => el.yMinMax[1] <= wordInput.yMinMax[0] + translationX
-			) ||
+					(el) => el.xMinMax[0] >= wordInput.xMinMax[1] - translationX
+				) &&
+				(data.every(
+					(el) => el.yMinMax[1] <= wordInput.yMinMax[0] - translationX
+				) ||
+					data.every(
+						(el) =>
+							el.yMinMax[0] >= wordInput.yMinMax[1] - translationX
+					))
+			) {
+				console.log('mode1 true - before wordInput.x:', wordInput.x);
+				var test1 = wordInput.x - translationX;
+				console.log('mode1 true - wordInput.x - translationX:', test1);
+				wordInput.x = wordInput.x - translationX;
+				console.log('mode1 true - after wordInput.x:', wordInput.x);
+				translationDone = 1;
+				data.push(wordInput);
+			}
+			// Translation Right - 2
+			if (
+				translationMode === 2 &&
+				!translationDone &&
 				data.every(
-					(el) => el.yMinMax[0] >= wordInput.yMinMax[1] + translationX
-				))
-		) {
-			console.log('mode2 true - before wordInput.x:', wordInput.x);
-			var test2 = wordInput.x - translationX;
-			console.log('mode2 true - wordInput.x - translationX:', test2);
-			wordInput.x = wordInput.x + translationX;
-			console.log('mode2 true - after wordInput.x:', wordInput.x);
-			translationDone = 1;
-			data.push(wordInput);
-		}
-		// Translation Up - 3
-		if (
-			translationMode === 3 &&
-			!translationDone &&
-			data.every(
-				(el) => el.yMinMax[1] <= wordInput.yMinMax[0] + translationY
-			) &&
-			(data.every(
-				(el) => el.xMinMax[1] <= wordInput.xMinMax[0] + translationY
-			) ||
+					(el) => el.xMinMax[1] <= wordInput.xMinMax[0] + translationX
+				) &&
+				(data.every(
+					(el) => el.yMinMax[1] <= wordInput.yMinMax[0] + translationX
+				) ||
+					data.every(
+						(el) =>
+							el.yMinMax[0] >= wordInput.yMinMax[1] + translationX
+					))
+			) {
+				console.log('mode2 true - before wordInput.x:', wordInput.x);
+				var test2 = wordInput.x - translationX;
+				console.log('mode2 true - wordInput.x - translationX:', test2);
+				wordInput.x = wordInput.x + translationX;
+				console.log('mode2 true - after wordInput.x:', wordInput.x);
+				translationDone = 1;
+				data.push(wordInput);
+			}
+			// Translation Up - 3
+			if (
+				translationMode === 3 &&
+				!translationDone &&
 				data.every(
-					(el) => el.xMinMax[0] >= wordInput.xMinMax[1] + translationY
-				))
-		) {
-			console.log('mode3 true - before wordInput.t:', wordInput.y);
-			var test3 = wordInput.y - translationY;
-			console.log('mode3 true - wordInput.y - translationY:', test3);
-			wordInput.y = wordInput.y + translationY;
-			console.log('mode3 true - after wordInput.t:', wordInput.y);
-			translationDone = 1;
-			data.push(wordInput);
-		}
-		// Translation Down - 4
-		if (
-			translationMode === 4 &&
-			!translationDone &&
-			data.every(
-				(el) => el.yMinMax[0] >= wordInput.yMinMax[1] - translationY
-			) &&
-			(data.every(
-				(el) => el.xMinMax[1] <= wordInput.xMinMax[0] - translationY
-			) ||
+					(el) => el.yMinMax[1] <= wordInput.yMinMax[0] + translationY
+				) &&
+				(data.every(
+					(el) => el.xMinMax[1] <= wordInput.xMinMax[0] + translationY
+				) ||
+					data.every(
+						(el) =>
+							el.xMinMax[0] >= wordInput.xMinMax[1] + translationY
+					))
+			) {
+				console.log('mode3 true - before wordInput.t:', wordInput.y);
+				var test3 = wordInput.y - translationY;
+				console.log('mode3 true - wordInput.y - translationY:', test3);
+				wordInput.y = wordInput.y + translationY;
+				console.log('mode3 true - after wordInput.t:', wordInput.y);
+				translationDone = 1;
+				data.push(wordInput);
+			}
+			// Translation Down - 4
+			if (
+				translationMode === 4 &&
+				!translationDone &&
 				data.every(
-					(el) => el.xMinMax[0] >= wordInput.xMinMax[1] - translationY
-				))
-		) {
-			console.log('mode4 true - before wordInput.y:', wordInput.y);
-			var test4 = wordInput.y - translationY;
-			console.log('mode4 true - wordInput.y - translationY:', test4);
-			wordInput.y = wordInput.y - translationY;
-			console.log('mode4 true - after wordInput.y:', wordInput.y);
-			translationDone = 1;
-			data.push(wordInput);
+					(el) => el.yMinMax[0] >= wordInput.yMinMax[1] - translationY
+				) &&
+				(data.every(
+					(el) => el.xMinMax[1] <= wordInput.xMinMax[0] - translationY
+				) ||
+					data.every(
+						(el) =>
+							el.xMinMax[0] >= wordInput.xMinMax[1] - translationY
+					))
+			) {
+				console.log('mode4 true - before wordInput.y:', wordInput.y);
+				var test4 = wordInput.y - translationY;
+				console.log('mode4 true - wordInput.y - translationY:', test4);
+				wordInput.y = wordInput.y - translationY;
+				console.log('mode4 true - after wordInput.y:', wordInput.y);
+				translationDone = 1;
+				data.push(wordInput);
+			}
 		}
-	}
-	if (!translationDone) {
-		translationRatio = translationRatio - 1;
-		checkingUp(wordsData);
+
+		if (!translationDone) {
+			translationRatio = translationRatio - 1;
+			findingPosition();
+		} else {
+			console.log('translation has been processed :)');
+			class WordExport {
+				constructor(color, count, horz, rotation, size, vert, word) {
+					this.color = color;
+					this.horz = horz;
+					this.rotation = rotation;
+					this.size = size;
+					this.vert = vert;
+					this.word = word;
+				}
+			}
+
+			wordsData.forEach((el, index) => {
+				var wordExport = new WordExport();
+				exportdata['Word' + index] = wordExport;
+				exportdata['Word' + index].word = el.word;
+				exportdata['Word' + index].horz = el.x;
+				exportdata['Word' + index].vert = el.y;
+				exportdata['Word' + index].size = el.fontSize;
+			});
+			var exportdataStringified = JSON.stringify(exportdata);
+		}
 	}
 	console.log(wordsData);
 	var exportdata = {};
 
-	class WordExport {
-		constructor(color, count, horz, rotation, size, vert, word) {
-			this.color = color;
-			this.horz = horz;
-			this.rotation = rotation;
-			this.size = size;
-			this.vert = vert;
-			this.word = word;
-		}
+	var display = [];
+	if (translationDone) {
+		display = [
+			arguments[0],
+			arguments[1],
+			arguments[2],
+			numberOfWordsCounted,
+			exportdataStringified,
+			arguments[4],
+		];
 	}
-
-	wordsData.forEach((el, index) => {
-		var wordExport = new WordExport();
-		exportdata['Word' + index] = wordExport;
-		exportdata['Word' + index].word = el.word;
-		exportdata['Word' + index].horz = el.x;
-		exportdata['Word' + index].vert = el.y;
-		exportdata['Word' + index].size = el.fontSize;
-	});
-	var exportdataStringified = JSON.stringify(exportdata);
-
-	console.log('this is exportdata', exportdataStringified);
-
-	return exportdataStringified;
+	return display;
 }
 main(['first Input']);
