@@ -129,9 +129,18 @@ function main(arguments) {
 			return Math.floor(Math.random() * (max - min) + min);
 		}
 	}
-	// Setting up new input word object
-	var wordInput = new WordClassElement(currentWord, 72, 0.42, 0, 960, 540);
+	// Reset translations value
 
+	function resetTranslationValues() {
+		translationRatioX === 22;
+		translationX = screenSize[0] / translationRatioX;
+		translationRatioY === 12;
+		translationY = screenSize[0] / translationRatioY;
+	}
+
+	// Setting up new input word object
+	var wordInput = new WordClassElement(currentWord, 36, 0.7, 0, 960, 540);
+	var margin = wordInput.fontSize + 20;
 	if (wordsData.length === 0) {
 		wordsData.push(wordInput);
 	} else {
@@ -141,23 +150,29 @@ function main(arguments) {
 	var spaceAvailable;
 	function checkingAvailableSpace(
 		data,
-		wordinput,
-		translationX,
-		translationY
+		wordInputNew,
+		translationXnew,
+		translationYnew
 	) {
 		if (
 			data.some(function (el) {
 				return (
-					((el.xMinMax[0] >= wordInput.xMinMax[0] + translationX &&
-						el.xMinMax[0] <= wordInput.xMinMax[1] + translationX) ||
-						(el.xMinMax[1] >= wordInput.xMinMax[0] + translationX &&
+					((el.xMinMax[0] >=
+						wordInputNew.xMinMax[0] + translationXnew &&
+						el.xMinMax[0] <=
+							wordInputNew.xMinMax[1] + translationXnew) ||
+						(el.xMinMax[1] >=
+							wordInputNew.xMinMax[0] + translationXnew &&
 							el.xMinMax[1] <=
-								wordInput.xMinMax[1] + translationX)) &&
-					((el.yMinMax[0] >= wordInput.yMinMax[0] + translationY &&
-						el.yMinMax[0] <= wordInput.yMinMax[1] + translationY) ||
-						(el.yMinMax[1] >= wordInput.yMinMax[0] + translationY &&
+								wordInputNew.xMinMax[1] + translationXnew)) &&
+					((el.yMinMax[0] >=
+						wordInputNew.yMinMax[0] + translationYnew &&
+						el.yMinMax[0] <=
+							wordInputNew.yMinMax[1] + translationYnew) ||
+						(el.yMinMax[1] >=
+							wordInputNew.yMinMax[0] + translationYnew &&
 							el.yMinMax[1] <=
-								wordInput.yMinMax[1] + translationY))
+								wordInputNew.yMinMax[1] + translationYnew))
 				);
 			})
 		) {
@@ -165,6 +180,8 @@ function main(arguments) {
 		} else {
 			spaceAvailable = true;
 		}
+		console.log('this translationX before checkingspace:', translationXnew);
+		console.log('this translationY before checkingspace:', translationYnew);
 		return spaceAvailable;
 	}
 	// Function placing checking by other components position
@@ -174,16 +191,44 @@ function main(arguments) {
 			function getRandom(min, max) {
 				return Math.floor(Math.random() * (max - min) + min);
 			}
-			translationMode = getRandom(1, 6);
+			translationMode = getRandom(1, 9);
+
+			function addingValues(translationX, translationY) {
+				wordInput.x = wordInput.x + translationX;
+				wordInput.xMinMax[0] = wordInput.xMinMax[0] + translationX;
+				wordInput.xMinMax[1] = wordInput.xMinMax[1] + translationX;
+
+				wordInput.y = wordInput.y + translationY;
+				wordInput.yMinMax[0] = wordInput.yMinMax[0] + translationY;
+				wordInput.yMinMax[1] = wordInput.yMinMax[1] + translationY;
+				console.log('this is translation X value added:', translationX);
+				console.log('this is translation Y value added:', translationY);
+			}
+
+			function checkingMargin(translationX, translationY, margin) {
+				var testingMargin =
+					wordInput.x + translationX > margin &&
+					wordInput.x + translationX < screenSize[0] - margin &&
+					wordInput.y + translationY < screenSize[1] - margin &&
+					wordInput.y + translationY > margin;
+				console.log(
+					'this is translation X value while checking:',
+					translationX
+				);
+				console.log(
+					'this is translation Y value while checking:',
+					translationY
+				);
+				console.log('this testing margin state:', testingMargin);
+
+				return testingMargin;
+			}
 
 			// Translation Left- 1
 			if (
 				translationMode === 1 &&
 				translationDone === 0 &&
-				wordInput.x - translationX > 50 &&
-				wordInput.x - translationX < screenSize[0] - 50 &&
-				wordInput.y < screenSize[1] - 50 &&
-				wordInput.y > 50 &&
+				checkingMargin(-Math.abs(translationX), 0, margin) &&
 				checkingAvailableSpace(
 					data,
 					wordInput,
@@ -191,13 +236,10 @@ function main(arguments) {
 					0
 				)
 			) {
-				wordInput.x = wordInput.x - translationX;
-				wordInput.xMinMax[0] = wordInput.xMinMax[0] - translationX;
-				wordInput.xMinMax[1] = wordInput.xMinMax[1] - translationX;
-
+				addingValues(-Math.abs(translationX), 0);
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('mode1 new word');
+				console.log('new word mode1-left');
 			} else {
 				translationMode === 2;
 			}
@@ -205,79 +247,144 @@ function main(arguments) {
 			if (
 				translationMode === 2 &&
 				translationDone === 0 &&
-				wordInput.x - translationX > 50 &&
-				wordInput.x - translationX < screenSize[0] - 50 &&
-				wordInput.y + translationY < screenSize[1] - 50 &&
-				wordInput.y + translationY > 50 &&
+				checkingMargin(
+					-Math.abs(translationX),
+					Math.abs(translationY),
+					margin
+				) &&
 				checkingAvailableSpace(
 					data,
 					wordInput,
 					-Math.abs(translationX),
-					translationY
+					Math.abs(translationY)
 				)
 			) {
-				wordInput.x = wordInput.x - translationX;
-				wordInput.xMinMax[0] = wordInput.xMinMax[0] - translationX;
-				wordInput.xMinMax[1] = wordInput.xMinMax[1] - translationX;
-
-				wordInput.y = wordInput.y + translationY;
-				wordInput.yMinMax[0] = wordInput.yMinMax[0] + translationY;
-				wordInput.yMinMax[1] = wordInput.yMinMax[1] + translationY;
+				addingValues(-Math.abs(translationX), Math.abs(translationY));
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('mode2 new word');
+				// resetTranslationValues();
+				console.log('new word mode2-leftUp');
 			} else {
 				translationMode === 3;
 			}
-			// Translation Right - 3
+			// Translation UpRight - 3
 			if (
-				translationMode === 2 &&
+				translationMode === 3 &&
 				translationDone === 0 &&
-				wordInput.x + translationX > 50 &&
-				wordInput.x + translationX < screenSize[0] - 50 &&
-				wordInput.y < screenSize[1] - 50 &&
-				wordInput.y > 50 &&
-				checkingAvailableSpace(data, wordInput, translationX, 0)
+				checkingMargin(
+					Math.abs(translationX),
+					Math.abs(translationY),
+					margin
+				) &&
+				checkingAvailableSpace(
+					data,
+					wordInput,
+					Math.abs(translationX),
+					Math.abs(translationY)
+				)
 			) {
-				wordInput.x = wordInput.x + translationX;
-				wordInput.xMinMax[0] = wordInput.xMinMax[0] + translationX;
-				wordInput.xMinMax[1] = wordInput.xMinMax[1] + translationX;
+				addingValues(Math.abs(translationX), Math.abs(translationY));
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('mode2 new word');
+				console.log('new word mode3-UpRight');
 			} else {
 				translationMode === 4;
 			}
-			// Translation UP - 4
+			// Translation Right - 4
 			if (
 				translationMode === 4 &&
 				translationDone === 0 &&
-				wordInput.y + translationY > 50 &&
-				wordInput.y + translationY < screenSize[1] - 50 &&
-				wordInput.x > 50 &&
-				wordInput.x < screenSize[0] - 50 &&
-				checkingAvailableSpace(data, wordInput, 0, translationY)
+				checkingMargin(Math.abs(translationX), 0, margin) &&
+				checkingAvailableSpace(
+					data,
+					wordInput,
+					Math.abs(translationX),
+					0
+				)
 			) {
-				wordInput.y = wordInput.y + translationY;
-				wordInput.yMinMax[0] = wordInput.yMinMax[0] + translationY;
-				wordInput.yMinMax[1] = wordInput.yMinMax[1] + translationY;
+				addingValues(Math.abs(translationX), 0);
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('mode3 new word');
+				console.log('new word mode4-Right');
 			} else {
 				translationMode === 5;
 			}
-			// Translation Down - 5
+			// Translation RightUp - 5
 			if (
-				translationMode === 4 &&
+				translationMode === 5 &&
 				translationDone === 0 &&
-				wordInput.y - translationY > 50 &&
-				wordInput.y - translationY < screenSize[1] - 50 &&
-				wordInput.x > 50 &&
-				wordInput.x < screenSize[0] - 50 &&
+				checkingMargin(
+					Math.abs(translationX),
+					Math.abs(translationY),
+					margin
+				) &&
+				checkingAvailableSpace(
+					data,
+					wordInput,
+					Math.abs(translationX),
+					Math.abs(translationY)
+				)
+			) {
+				addingValues(Math.abs(translationX), Math.abs(translationY));
+
+				translationDone = 1;
+				data.push(wordInput);
+				console.log('new word mode5-RightUp');
+			} else {
+				translationMode === 6;
+			}
+			// Translation RightDown - 6
+			if (
+				translationMode === 6 &&
+				translationDone === 0 &&
+				checkingMargin(
+					Math.abs(translationX),
+					-Math.abs(translationY),
+					margin
+				) &&
+				checkingAvailableSpace(
+					data,
+					wordInput,
+					Math.abs(translationX),
+					-Math.abs(translationY)
+				)
+			) {
+				addingValues(Math.abs(translationX), -Math.abs(translationY));
+
+				translationDone = 1;
+				data.push(wordInput);
+				console.log('new word mode6-RightDown');
+			} else {
+				translationMode === 7;
+			}
+			// Translation UP - 7
+			if (
+				translationMode === 7 &&
+				translationDone === 0 &&
+				checkingMargin(0, Math.abs(translationY), margin) &&
+				checkingAvailableSpace(
+					data,
+					wordInput,
+					0,
+					Math.abs(translationY)
+				)
+			) {
+				addingValues(0, Math.abs(translationY));
+
+				translationDone = 1;
+				data.push(wordInput);
+				console.log('new word mode7-Up');
+			} else {
+				translationMode === 8;
+			}
+			// Translation Down - 8
+			if (
+				translationMode === 8 &&
+				translationDone === 0 &&
+				checkingMargin(0, -Math.abs(translationY), margin) &&
 				checkingAvailableSpace(
 					data,
 					wordInput,
@@ -285,28 +392,24 @@ function main(arguments) {
 					-Math.abs(translationY)
 				)
 			) {
-				wordInput.y = wordInput.y - translationY;
-				wordInput.yMinMax[0] = wordInput.yMinMax[0] - translationY;
-				wordInput.yMinMax[1] = wordInput.yMinMax[1] - translationY;
+				addingValues(0, -Math.abs(translationY));
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('mode4 new word');
+				console.log('new word mode8-Down');
 			}
 
 			if (translationDone !== 1) {
-				translationRatioX = translationRatioX - 0.01;
-				translationRatioY = translationRatioY - 0.01;
+				translationRatioX = translationRatioX - 1;
+				translationRatioY = translationRatioY - 0.5;
 				translationX = screenSize[0] / translationRatioX;
 				translationY = screenSize[1] / translationRatioY;
 
-				if (translationRatioX === 5) {
-					translationRatioX === 22;
-					translationX = screenSize[0] / translationRatioX;
+				if (translationRatioX === 2) {
+					resetTranslationValues();
 				}
 				if (translationRatioY === 3) {
-					translationRatioY === 12;
-					translationY = screenSize[0] / translationRatioY;
+					resetTranslationValues();
 				}
 				findingPosition();
 			}
@@ -351,6 +454,6 @@ function main(arguments) {
 
 		return display;
 	}
-	console.log(wordsData);
+	// console.log(wordsData);
 }
 main(['input0']);
