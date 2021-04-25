@@ -100,14 +100,15 @@ function main(arguments) {
 	// Set up
 	var screenSize = [1920, 1080];
 	var currentWord = arguments[0];
-	var translationRatioX = 22;
-	var translationRatioY = 12;
+	var translationRatioX = 60;
+	var translationRatioY = 40;
 	var translationX = screenSize[0] / translationRatioX;
 	var translationY = screenSize[1] / translationRatioY;
 	var numberOfWordsCounted = 0;
 	var exportdataStringified;
 	var translationDone = 0;
 	var translationMode;
+	var count;
 
 	class WordClassElement {
 		constructor(word, fontSize, fontRatio, kerning, x, y) {
@@ -117,10 +118,8 @@ function main(arguments) {
 			this.fontRatio = fontRatio;
 			this.width = this.wordLength * this.fontSize * this.fontRatio;
 			this.height = this.fontSize;
-			this.x = x;
-			this.y = y;
-			// this.x = this.randomPosition(192, 1728);
-			// this.y = this.randomPosition(108, 972);
+			this.x = this.randomPosition(80, 1840);
+			this.y = this.randomPosition(80, 1000);
 			this.xMinMax = [this.x, this.x + this.width];
 			this.yMinMax = [this.y, this.y + this.height];
 			this.kerning = kerning;
@@ -132,15 +131,15 @@ function main(arguments) {
 	// Reset translations value
 
 	function resetTranslationValues() {
-		translationRatioX === 22;
+		translationRatioX === 60;
 		translationX = screenSize[0] / translationRatioX;
-		translationRatioY === 12;
+		translationRatioY === 40;
 		translationY = screenSize[0] / translationRatioY;
 	}
 
 	// Setting up new input word object
-	var wordInput = new WordClassElement(currentWord, 36, 0.7, 0, 960, 540);
-	var margin = wordInput.fontSize + 20;
+	var wordInput = new WordClassElement(currentWord, 42, 0.6, 0, 960, 540);
+	var margin = wordInput.fontSize * 2;
 	if (wordsData.length === 0) {
 		wordsData.push(wordInput);
 	} else {
@@ -157,7 +156,7 @@ function main(arguments) {
 		if (
 			data.some(function (el) {
 				return (
-					((el.xMinMax[0] >=
+					(((el.xMinMax[0] >=
 						wordInputNew.xMinMax[0] + translationXnew &&
 						el.xMinMax[0] <=
 							wordInputNew.xMinMax[1] + translationXnew) ||
@@ -165,14 +164,31 @@ function main(arguments) {
 							wordInputNew.xMinMax[0] + translationXnew &&
 							el.xMinMax[1] <=
 								wordInputNew.xMinMax[1] + translationXnew)) &&
-					((el.yMinMax[0] >=
-						wordInputNew.yMinMax[0] + translationYnew &&
-						el.yMinMax[0] <=
-							wordInputNew.yMinMax[1] + translationYnew) ||
-						(el.yMinMax[1] >=
+						((el.yMinMax[0] >=
 							wordInputNew.yMinMax[0] + translationYnew &&
-							el.yMinMax[1] <=
-								wordInputNew.yMinMax[1] + translationYnew))
+							el.yMinMax[0] <=
+								wordInputNew.yMinMax[1] + translationYnew) ||
+							(el.yMinMax[1] >=
+								wordInputNew.yMinMax[0] + translationYnew &&
+								el.yMinMax[1] <=
+									wordInputNew.yMinMax[1] +
+										translationYnew))) ||
+					(((wordInputNew.xMinMax[0] + translationXnew >=
+						el.xMinMax[0] &&
+						wordInputNew.xMinMax[0] + translationXnew <=
+							el.xMinMax[1]) ||
+						(wordInputNew.xMinMax[1] + translationXnew >=
+							el.xMinMax[0] &&
+							wordInputNew.xMinMax[1] + translationXnew <=
+								el.xMinMax[1])) &&
+						((wordInputNew.yMinMax[0] + translationYnew >=
+							el.yMinMax[0] &&
+							wordInputNew.yMinMax[0] + translationYnew <=
+								el.yMinMax[1]) ||
+							(wordInputNew.yMinMax[1] + translationYnew >=
+								el.yMinMax[0] &&
+								wordInputNew.yMinMax[1] + translationYnew <=
+									el.yMinMax[1])))
 				);
 			})
 		) {
@@ -180,12 +196,13 @@ function main(arguments) {
 		} else {
 			spaceAvailable = true;
 		}
-		console.log('this translationX before checkingspace:', translationXnew);
-		console.log('this translationY before checkingspace:', translationYnew);
+		// console.log('this translationX before checkingspace:', translationXnew);
+		// console.log('this translationY before checkingspace:', translationYnew);
 		return spaceAvailable;
 	}
 	// Function placing checking by other components position
 	function checkingUp(data) {
+		count = 0;
 		function findingPosition() {
 			// Generating random translation mode
 			function getRandom(min, max) {
@@ -201,25 +218,27 @@ function main(arguments) {
 				wordInput.y = wordInput.y + translationY;
 				wordInput.yMinMax[0] = wordInput.yMinMax[0] + translationY;
 				wordInput.yMinMax[1] = wordInput.yMinMax[1] + translationY;
-				console.log('this is translation X value added:', translationX);
-				console.log('this is translation Y value added:', translationY);
+				// console.log('this is translation X value added:', translationX);
+				// console.log('this is translation Y value added:', translationY);
 			}
 
 			function checkingMargin(translationX, translationY, margin) {
 				var testingMargin =
-					wordInput.x + translationX > margin &&
-					wordInput.x + translationX < screenSize[0] - margin &&
-					wordInput.y + translationY < screenSize[1] - margin &&
-					wordInput.y + translationY > margin;
-				console.log(
-					'this is translation X value while checking:',
-					translationX
-				);
-				console.log(
-					'this is translation Y value while checking:',
-					translationY
-				);
-				console.log('this testing margin state:', testingMargin);
+					wordInput.xMinMax[0] + translationX > margin &&
+					wordInput.xMinMax[1] + translationX <
+						screenSize[0] - margin &&
+					wordInput.yMinMax[0] + translationY <
+						screenSize[1] - margin &&
+					wordInput.yMinMax[1] + translationY > margin;
+				// console.log(
+				// 	'this is translation X value while checking Margin:',
+				// 	translationX
+				// );
+				// console.log(
+				// 	'this is translation Y value while checking Margin:',
+				// 	translationY
+				// );
+				// console.log('this testing margin state:', testingMargin);
 
 				return testingMargin;
 			}
@@ -263,7 +282,7 @@ function main(arguments) {
 
 				translationDone = 1;
 				data.push(wordInput);
-				// resetTranslationValues();
+
 				console.log('new word mode2-leftUp');
 			} else {
 				translationMode === 3;
@@ -312,27 +331,27 @@ function main(arguments) {
 			} else {
 				translationMode === 5;
 			}
-			// Translation RightUp - 5
+			// Translation LeftDown - 5
 			if (
 				translationMode === 5 &&
 				translationDone === 0 &&
 				checkingMargin(
-					Math.abs(translationX),
-					Math.abs(translationY),
+					-Math.abs(translationX),
+					-Math.abs(translationY),
 					margin
 				) &&
 				checkingAvailableSpace(
 					data,
 					wordInput,
-					Math.abs(translationX),
-					Math.abs(translationY)
+					-Math.abs(translationX),
+					-Math.abs(translationY)
 				)
 			) {
-				addingValues(Math.abs(translationX), Math.abs(translationY));
+				addingValues(-Math.abs(translationX), -Math.abs(translationY));
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('new word mode5-RightUp');
+				console.log('new word mode5-LeftDown');
 			} else {
 				translationMode === 6;
 			}
@@ -399,22 +418,30 @@ function main(arguments) {
 				console.log('new word mode8-Down');
 			}
 
-			if (translationDone !== 1) {
-				translationRatioX = translationRatioX - 1;
-				translationRatioY = translationRatioY - 0.5;
+			if (translationDone === 1) {
+				resetTranslationValues();
+				count = 0;
+			}
+
+			if (translationDone !== 1 && count < 400) {
+				translationRatioX = translationRatioX - 0.1;
+				translationRatioY = translationRatioY - 0.1;
 				translationX = screenSize[0] / translationRatioX;
 				translationY = screenSize[1] / translationRatioY;
 
-				if (translationRatioX === 2) {
+				if (translationRatioX === 1.5) {
 					resetTranslationValues();
 				}
-				if (translationRatioY === 3) {
+				if (translationRatioY === 1.5) {
 					resetTranslationValues();
 				}
 				findingPosition();
+				count = count + 1;
 			}
 		}
-		findingPosition();
+		if (count < 400) {
+			findingPosition();
+		}
 	}
 
 	// Function checking & adding word data
