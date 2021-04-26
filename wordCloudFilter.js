@@ -96,55 +96,167 @@
 
 var wordsData = [];
 
-function main(arguments) {
+function main() {
 	// Set up
-	var screenSize = [1920, 1080];
-	var currentWord = arguments[0];
-	var translationRatioX = 60;
-	var translationRatioY = 40;
-	var translationX = screenSize[0] / translationRatioX;
-	var translationY = screenSize[1] / translationRatioY;
-	var numberOfWordsCounted = 0;
-	var exportdataStringified;
-	var translationDone = 0;
-	var translationMode;
-	var count;
-
 	class WordClassElement {
-		constructor(word, fontSize, fontRatio, kerning, x, y) {
+		constructor(word, fontSize, fontRatio, kerning, x, y, count, rotation) {
 			this.word = word;
 			this.wordLength = this.word.length;
 			this.fontSize = fontSize;
 			this.fontRatio = fontRatio;
 			this.width = this.wordLength * this.fontSize * this.fontRatio;
 			this.height = this.fontSize;
-			this.x = this.randomPosition(80, 1840);
-			this.y = this.randomPosition(80, 1000);
+			this.x = this.randomPosition(700, 1220);
+			this.y = this.randomPosition(350, 550);
 			this.xMinMax = [this.x, this.x + this.width];
 			this.yMinMax = [this.y, this.y + this.height];
 			this.kerning = kerning;
+			this.count = count;
+			this.rotation = rotation;
 		}
 		randomPosition(min, max) {
 			return Math.floor(Math.random() * (max - min) + min);
 		}
 	}
-	// Reset translations value
+	class WordClassRotationElement {
+		constructor(word, fontSize, fontRatio, kerning, x, y, count, rotation) {
+			this.word = word;
+			this.wordLength = this.word.length;
+			this.fontSize = fontSize;
+			this.fontRatio = fontRatio;
+			this.width = this.fontSize;
+			this.height = this.wordLength * this.fontSize * this.fontRatio;
+			this.x = this.randomPosition(700, 1220);
+			this.y = this.randomPosition(350, 550);
+			this.xMinMax = [this.x, this.x + this.width];
+			this.yMinMax = [this.y, this.y + this.height];
+			this.kerning = kerning;
+			this.count = count;
+			this.rotation = rotation;
+		}
+		randomPosition(min, max) {
+			return Math.floor(Math.random() * (max - min) + min);
+		}
+	}
+	var screenSize = [1920, 1080];
+	var currentWord = arguments[0];
+	var translationRatioX = 40;
+	var translationRatioY = 20;
+	var translationX = screenSize[0] / translationRatioX;
+	var translationY = screenSize[1] / translationRatioY;
+	var numberOfWordsCounted = 0;
+	var exportdataStringified;
+	var translationDone = 0;
+	var newValues = 0;
+	var translationMode;
+	var count;
+	var wordInput = new WordClassElement(
+		currentWord,
+		42,
+		0.6,
+		0,
+		960,
+		540,
+		1,
+		0
+	);
+	var margin = wordInput.fontSize * 2;
+	// Get random number
+	function getRandom(min, max) {
+		return Math.floor(Math.random() * (max - min) + min);
+	}
 
-	function resetTranslationValues() {
-		translationRatioX === 60;
-		translationX = screenSize[0] / translationRatioX;
-		translationRatioY === 40;
-		translationY = screenSize[0] / translationRatioY;
+	// Resizing function
+	function resizing(word, factor) {
+		word.fontSize = word.fontSize * factor;
+		word.width = word.width * factor;
+		word.height = word.height * factor;
+		word.xMinMax[1] = word.xMinMax[1] * factor;
+		word.yMinMax[1] = word.yMinMax[1] * factor;
+	}
+	// Repositioning function after element has been resized
+	function repositioningWords(word, factor) {
+		wordsData.forEach(function (el) {
+			// Words up
+			if (el.yMinMax[0] > word.yMinMax[1]) {
+				el.yMinMax[0] = el.yMinMax[0] + factor;
+				el.yMinMax[1] = el.yMinMax[1] + factor;
+				el.y = el.y + factor;
+			}
+			// Words down
+			if (el.yMinMax[1] < word.yMinMax[0]) {
+				el.yMinMax[0] = el.yMinMax[0] - factor;
+				el.yMinMax[1] = el.yMinMax[1] - factor;
+				el.y = el.y - factor;
+			}
+			// Words Right
+			if (el.xMinMax[0] > word.xMinMax[1]) {
+				el.xMinMax[0] = el.xMinMax[0] + factor;
+				el.xMinMax[1] = el.xMinMax[1] + factor;
+				el.x = el.x + factor;
+			}
+			// Words Right
+			if (el.xMinMax[1] < word.xMinMax[0]) {
+				el.xMinMax[0] = el.xMinMax[0] - factor;
+				el.xMinMax[1] = el.xMinMax[1] - factor;
+				el.x = el.x - factor;
+			}
+		});
+	}
+
+	// Random rotation position for word
+	var rotationTrue = getRandom(1, 7);
+	if (rotationTrue === 2) {
+		wordInput = new WordClassRotationElement(
+			currentWord,
+			42,
+			0.6,
+			0,
+			960,
+			540,
+			1,
+			1
+		);
 	}
 
 	// Setting up new input word object
-	var wordInput = new WordClassElement(currentWord, 42, 0.6, 0, 960, 540);
-	var margin = wordInput.fontSize * 2;
 	if (wordsData.length === 0) {
 		wordsData.push(wordInput);
 	} else {
-		checkingUp(wordsData);
+		//Checking if word has already been passed
+		wordsData.forEach((el) => {
+			if (el.word === arguments[0]) {
+				if (el.count < 4) {
+					el.count = el.count + 1;
+					console.log('same word count added:');
+				}
+				if (el.count === 2) {
+					resizing(el, 1.4);
+					repositioningWords(el, el.fontSize * 1.5);
+					console.log('word with count:', el.word, el.count);
+					newValues = 1;
+				}
+				if (el.count === 3) {
+					resizing(el, 1.1);
+					repositioningWords(el, el.fontSize * 0.5);
+					console.log('word with count:', el.word, el.count);
+					newValues = 1;
+				}
+			} else {
+				checkingUp(wordsData);
+				newValues = 0;
+			}
+		});
 	}
+
+	// Reset translations value
+	function resetTranslationValues() {
+		translationRatioX === 40;
+		translationX = screenSize[0] / translationRatioX;
+		translationRatioY === 20;
+		translationY = screenSize[0] / translationRatioY;
+	}
+
 	// Function to check available space used by findingPosition()
 	var spaceAvailable;
 	function checkingAvailableSpace(
@@ -205,9 +317,7 @@ function main(arguments) {
 		count = 0;
 		function findingPosition() {
 			// Generating random translation mode
-			function getRandom(min, max) {
-				return Math.floor(Math.random() * (max - min) + min);
-			}
+
 			translationMode = getRandom(1, 9);
 
 			function addingValues(translationX, translationY) {
@@ -230,16 +340,6 @@ function main(arguments) {
 					wordInput.yMinMax[0] + translationY <
 						screenSize[1] - margin &&
 					wordInput.yMinMax[1] + translationY > margin;
-				// console.log(
-				// 	'this is translation X value while checking Margin:',
-				// 	translationX
-				// );
-				// console.log(
-				// 	'this is translation Y value while checking Margin:',
-				// 	translationY
-				// );
-				// console.log('this testing margin state:', testingMargin);
-
 				return testingMargin;
 			}
 
@@ -423,38 +523,38 @@ function main(arguments) {
 				count = 0;
 			}
 
-			if (translationDone !== 1 && count < 400) {
-				translationRatioX = translationRatioX - 0.1;
-				translationRatioY = translationRatioY - 0.1;
+			if (translationDone !== 1 && count < 2) {
+				translationRatioX = translationRatioX - 2;
+				translationRatioY = translationRatioY - 0.5;
 				translationX = screenSize[0] / translationRatioX;
 				translationY = screenSize[1] / translationRatioY;
 
-				if (translationRatioX === 1.5) {
+				if (translationRatioX === 4) {
 					resetTranslationValues();
 				}
-				if (translationRatioY === 1.5) {
+				if (translationRatioY === 3) {
 					resetTranslationValues();
 				}
 				findingPosition();
 				count = count + 1;
 			}
 		}
-		if (count < 400) {
+		if (count < 2) {
 			findingPosition();
 		}
 	}
 
 	// Function checking & adding word data
-	if (translationDone === 1 || wordsData.length === 1) {
+	if (translationDone === 1 || wordsData.length === 1 || newValues === 1) {
 		var exportdata = {};
 		class WordExport {
-			constructor(color, count, horz, rotation, size, vert, word) {
-				this.color = color;
-				this.horz = horz;
-				this.rotation = rotation;
-				this.size = size;
-				this.vert = vert;
+			constructor(word, size, horz, vert, count, rotation) {
 				this.word = word;
+				this.size = size;
+				this.horz = horz;
+				this.vert = vert;
+				this.count = count;
+				this.rotation = rotation;
 			}
 		}
 
@@ -465,11 +565,13 @@ function main(arguments) {
 			exportdata['Word' + index].horz = el.x;
 			exportdata['Word' + index].vert = el.y;
 			exportdata['Word' + index].size = el.fontSize;
+			exportdata['Word' + index].count = el.count;
+			exportdata['Word' + index].rotation = el.rotation;
 		});
 		exportdataStringified = JSON.stringify(exportdata);
 	}
 	var display = [];
-	if (translationDone === 1 || wordsData.length === 1) {
+	if (translationDone === 1 || wordsData.length === 1 || newValues === 1) {
 		display = [
 			arguments[0],
 			arguments[1],
