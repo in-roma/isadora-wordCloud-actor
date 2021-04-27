@@ -1,8 +1,13 @@
 var wordsData = [];
 
+// Helper Get random number
+function getRandom(min, max) {
+	return Math.floor(Math.random() * (max - min) + min);
+}
+
 function main(arguments) {
 	// Function Set up
-	// Word input Class
+	// WordInput Class
 	class WordClassElement {
 		constructor(word, fontSize, fontRatio, kerning, x, y, count, rotation) {
 			this.word = word;
@@ -10,8 +15,8 @@ function main(arguments) {
 			this.wordLength = this.word.length;
 			this.fontSize = fontSize;
 			this.fontRatio = fontRatio;
-			this.width = setWidth(this.rotation);
-			this.height = setHeight(this.rotation);
+			this.width = this.setWidth(this.rotation);
+			this.height = this.setHeight(this.rotation);
 			this.x = this.randomPosition(900, 1020);
 			this.y = this.randomPosition(500, 580);
 			this.xMinMax = [this.x, this.x + this.width];
@@ -37,7 +42,7 @@ function main(arguments) {
 			return Math.floor(Math.random() * (max - min) + min);
 		}
 	}
-	// Functions main variables
+	// Main variables
 	var screenSize = [1920, 1080];
 	var currentWord = arguments[0];
 	var translationRatioX = 120;
@@ -51,12 +56,67 @@ function main(arguments) {
 	var translationMode;
 	var findingCount = 0;
 	var wordInput;
+
+	// New sequence - first item either horizontal or vertical
+	// Random rotation position for word
+	var rotationTrue = getRandom(1, 5);
+	// Vertical word
+	if (rotationTrue === 4) {
+		wordInput = new WordClassElement(
+			currentWord,
+			42,
+			0.6,
+			0,
+			960,
+			540,
+			1,
+			1
+		);
+	} else {
+		// Vertical Horizontal
+		wordInput = new WordClassElement(
+			currentWord,
+			42,
+			0.6,
+			0,
+			960,
+			540,
+			1,
+			0
+		);
+	}
 	var margin = wordInput.fontSize * 2;
 
-	// Helpers
-	// Get random number
-	function getRandom(min, max) {
-		return Math.floor(Math.random() * (max - min) + min);
+	// Sequence - is first item ?
+	if (wordsData.length === 0) {
+		wordsData.push(wordInput);
+	} else {
+		// Not first item
+		// Checking if word has already been passed
+		wordsData.forEach((el) => {
+			if (el.word === arguments[0]) {
+				if (el.count < 4) {
+					el.count = el.count + 1;
+					console.log('same word count added:');
+				}
+				if (el.count === 2) {
+					resizing(el, 1.4);
+					repositioningWords(el, el.fontSize * 1.5);
+					console.log('word with count:', el.word, el.count);
+					newValues = 1;
+				}
+				if (el.count === 3) {
+					resizing(el, 1.1);
+					repositioningWords(el, el.fontSize * 0.5);
+					console.log('word with count:', el.word, el.count);
+					newValues = 1;
+				}
+			} else {
+				// Processing new word
+				checkingUp(wordsData);
+				newValues = 0;
+			}
+		});
 	}
 
 	// Resizing function
@@ -97,64 +157,6 @@ function main(arguments) {
 		});
 	}
 
-	// Random rotation position for word
-	var rotationTrue = getRandom(1, 5);
-	if (rotationTrue === 4) {
-		wordInput = new WordClassElement(
-			currentWord,
-			42,
-			0.6,
-			0,
-			960,
-			540,
-			1,
-			1
-		);
-	} else {
-		wordInput = new WordClassElement(
-			currentWord,
-			42,
-			0.6,
-			0,
-			960,
-			540,
-			1,
-			0
-		);
-	}
-
-	// New sequence - first item
-	if (wordsData.length === 0) {
-		wordsData.push(wordInput);
-	} else {
-		// After first item
-		// Checking if word has already been passed
-		wordsData.forEach((el) => {
-			if (el.word === arguments[0]) {
-				if (el.count < 4) {
-					el.count = el.count + 1;
-					console.log('same word count added:');
-				}
-				if (el.count === 2) {
-					resizing(el, 1.4);
-					repositioningWords(el, el.fontSize * 1.5);
-					console.log('word with count:', el.word, el.count);
-					newValues = 1;
-				}
-				if (el.count === 3) {
-					resizing(el, 1.1);
-					repositioningWords(el, el.fontSize * 0.5);
-					console.log('word with count:', el.word, el.count);
-					newValues = 1;
-				}
-			} else {
-				// Processing new word
-				checkingUp(wordsData);
-				newValues = 0;
-			}
-		});
-	}
-
 	// Reset translations value
 	function resetTranslationValues() {
 		translationRatioX === 120;
@@ -164,13 +166,14 @@ function main(arguments) {
 	}
 
 	// Function to check available space used by findingPosition()
-	var spaceAvailable;
+
 	function checkingAvailableSpace(
 		data,
 		wordInputNew,
 		translationXnew,
 		translationYnew
 	) {
+		var spaceAvailable;
 		if (
 			data.some(function (el) {
 				if (wordInputNew.rotation === 0) {
