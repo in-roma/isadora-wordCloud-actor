@@ -5,7 +5,7 @@ function getRandom(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
 }
 
-function main(arguments) {
+function main() {
 	// Function Set up
 	// WordInput Class
 	class WordClassElement {
@@ -17,8 +17,8 @@ function main(arguments) {
 			this.fontRatio = fontRatio;
 			this.width = this.setWidth(this.rotation);
 			this.height = this.setHeight(this.rotation);
-			this.x = this.randomPosition(900, 1020);
-			this.y = this.randomPosition(500, 580);
+			this.x = this.randomPosition(860, 1060);
+			this.y = this.randomPosition(380, 700);
 			this.xMinMax = [this.x, this.x + this.width];
 			this.yMinMax = [this.y, this.y + this.height];
 			this.kerning = kerning;
@@ -45,27 +45,27 @@ function main(arguments) {
 	// Main variables
 	var screenSize = [1920, 1080];
 	var currentWord = arguments[0];
-	var translationRatioX = 120;
-	var translationRatioY = 60;
+	var translationRatioX = 80;
+	var translationRatioY = 40;
 	var translationX = screenSize[0] / translationRatioX;
 	var translationY = screenSize[1] / translationRatioY;
 	var numberOfWordsCounted = 0;
 	var exportdataStringified;
-	var translationDone = 0;
+	var translationDone;
 	var newValues = 0;
 	var translationMode;
-	var findingCount = 0;
+	var findingCycles = 0;
 	var wordInput;
 
 	// New sequence - first item either horizontal or vertical
 	// Random rotation position for word
-	var rotationTrue = getRandom(1, 5);
+	var rotationTrue = getRandom(1, 6);
 	// Vertical word
-	if (rotationTrue === 4) {
+	if (rotationTrue === 1) {
 		wordInput = new WordClassElement(
 			currentWord,
-			42,
-			0.6,
+			48,
+			0.9,
 			0,
 			960,
 			540,
@@ -76,8 +76,8 @@ function main(arguments) {
 		// Vertical Horizontal
 		wordInput = new WordClassElement(
 			currentWord,
-			42,
-			0.6,
+			48,
+			0.9,
 			0,
 			960,
 			540,
@@ -100,14 +100,14 @@ function main(arguments) {
 					console.log('same word count added:');
 				}
 				if (el.count === 2) {
-					resizing(el, 1.4);
-					repositioningWords(el, el.fontSize * 1.5);
+					resizing(el, 1.3);
+
 					console.log('word with count:', el.word, el.count);
 					newValues = 1;
 				}
 				if (el.count === 3) {
-					resizing(el, 1.1);
-					repositioningWords(el, el.fontSize * 0.5);
+					resizing(el, 1.2);
+
 					console.log('word with count:', el.word, el.count);
 					newValues = 1;
 				}
@@ -127,148 +127,133 @@ function main(arguments) {
 		word.xMinMax[1] = word.xMinMax[1] * factor;
 		word.yMinMax[1] = word.yMinMax[1] * factor;
 	}
-	// Repositioning function after element has been resized
-	function repositioningWords(word, factor) {
-		wordsData.forEach(function (el) {
-			// Words up
-			if (el.yMinMax[0] > word.yMinMax[1]) {
-				el.yMinMax[0] = el.yMinMax[0] + factor;
-				el.yMinMax[1] = el.yMinMax[1] + factor;
-				el.y = el.y + factor;
-			}
-			// Words down
-			if (el.yMinMax[1] < word.yMinMax[0]) {
-				el.yMinMax[0] = el.yMinMax[0] - factor;
-				el.yMinMax[1] = el.yMinMax[1] - factor;
-				el.y = el.y - factor;
-			}
-			// Words Right
-			if (el.xMinMax[0] > word.xMinMax[1]) {
-				el.xMinMax[0] = el.xMinMax[0] + factor;
-				el.xMinMax[1] = el.xMinMax[1] + factor;
-				el.x = el.x + factor;
-			}
-			// Words Right
-			if (el.xMinMax[1] < word.xMinMax[0]) {
-				el.xMinMax[0] = el.xMinMax[0] - factor;
-				el.xMinMax[1] = el.xMinMax[1] - factor;
-				el.x = el.x - factor;
-			}
-		});
-	}
 
 	// Reset translations value
 	function resetTranslationValues() {
-		translationRatioX === 120;
+		translationRatioX === 80;
 		translationX = screenSize[0] / translationRatioX;
-		translationRatioY === 60;
+		translationRatioY === 40;
 		translationY = screenSize[0] / translationRatioY;
 	}
 
 	// Function to check available space used by findingPosition()
-
 	function checkingAvailableSpace(
 		data,
 		wordInputNew,
 		translationXnew,
 		translationYnew
 	) {
-		var spaceAvailable;
-		if (
-			data.some(function (el) {
-				if (wordInputNew.rotation === 0) {
-					return (
-						(((el.xMinMax[0] >=
+		return data.some(
+			(el) =>
+				// 1. WordInput XY smaller then el
+				(wordInputNew.xMinMax[0] + translationXnew >= el.xMinMax[0] &&
+					wordInputNew.xMinMax[1] + translationXnew <=
+						el.xMinMax[1] &&
+					wordInputNew.yMinMax[0] + translationYnew >=
+						el.yMinMax[0] &&
+					wordInputNew.yMinMax[1] + translationYnew <=
+						el.yMinMax[1]) ||
+				// 2. WordInput X0 smaller & X1 bigger &  Y0 bigger & Y1 smaller
+				(wordInputNew.xMinMax[0] + translationXnew <= el.xMinMax[0] &&
+					wordInputNew.xMinMax[1] + translationXnew >=
+						el.xMinMax[1] &&
+					wordInputNew.yMinMax[0] + translationYnew >=
+						el.yMinMax[0] &&
+					wordInputNew.yMinMax[1] + translationYnew <=
+						el.yMinMax[1]) ||
+				// 3. WordInput X0 bigger & X1 smaller &  Y0 smaller & Y1 smaller
+				(wordInputNew.xMinMax[0] + translationXnew >= el.xMinMax[0] &&
+					wordInputNew.xMinMax[1] + translationXnew <=
+						el.xMinMax[1] &&
+					wordInputNew.yMinMax[0] + translationYnew <=
+						el.yMinMax[0] &&
+					wordInputNew.yMinMax[1] + translationYnew >=
+						el.yMinMax[1]) ||
+				// 4. WordInput X0 smaller & X1 bigger &  Y0 smaller & Y1 bigger
+				(wordInputNew.xMinMax[0] + translationXnew <= el.xMinMax[0] &&
+					wordInputNew.xMinMax[1] + translationXnew >=
+						el.xMinMax[1] &&
+					wordInputNew.yMinMax[0] + translationYnew <=
+						el.yMinMax[0] &&
+					wordInputNew.yMinMax[1] + translationYnew >=
+						el.yMinMax[1]) ||
+				(el.xMinMax[0] >= wordInputNew.xMinMax[0] + translationXnew &&
+					el.xMinMax[0] <=
+						wordInputNew.xMinMax[1] + translationXnew &&
+					((el.yMinMax[0] >=
+						wordInputNew.yMinMax[0] + translationYnew &&
+						el.yMinMax[0] <=
+							wordInputNew.yMinMax[1] + translationYnew) ||
+						(el.yMinMax[1] >=
+							wordInputNew.yMinMax[0] + translationYnew &&
+							el.yMinMax[1] <=
+								wordInputNew.yMinMax[1] + translationYnew))) ||
+				(el.xMinMax[1] >= wordInputNew.xMinMax[0] + translationXnew &&
+					el.xMinMax[1] <=
+						wordInputNew.xMinMax[1] + translationXnew &&
+					((el.yMinMax[0] >=
+						wordInputNew.yMinMax[0] + translationYnew &&
+						el.yMinMax[0] <=
+							wordInputNew.yMinMax[1] + translationYnew) ||
+						(el.yMinMax[1] >=
+							wordInputNew.yMinMax[0] + translationYnew &&
+							el.yMinMax[1] <=
+								wordInputNew.yMinMax[1] + translationYnew))) ||
+				(el.xMinMax[0] <= wordInputNew.xMinMax[0] + translationXnew &&
+					el.xMinMax[0] >=
+						wordInputNew.xMinMax[1] + translationXnew &&
+					((el.yMinMax[0] >=
+						wordInputNew.yMinMax[0] + translationYnew &&
+						el.yMinMax[0] <=
+							wordInputNew.yMinMax[1] + translationYnew) ||
+						(el.yMinMax[1] >=
+							wordInputNew.yMinMax[0] + translationYnew &&
+							el.yMinMax[1] <=
+								wordInputNew.yMinMax[1] + translationYnew))) ||
+				(el.yMinMax[0] <= wordInputNew.yMinMax[0] + translationYnew &&
+					el.yMinMax[0] >=
+						wordInputNew.yMinMax[1] + translationYnew &&
+					((el.xMinMax[0] >=
+						wordInputNew.xMinMax[0] + translationXnew &&
+						el.xMinMax[0] <=
+							wordInputNew.xMinMax[1] + translationXnew) ||
+						(el.xMinMax[1] >=
 							wordInputNew.xMinMax[0] + translationXnew &&
-							el.xMinMax[0] <=
-								wordInputNew.xMinMax[1] + translationXnew) ||
-							(el.xMinMax[1] >=
-								wordInputNew.xMinMax[0] + translationXnew &&
-								el.xMinMax[1] <=
-									wordInputNew.xMinMax[1] +
-										translationXnew)) &&
-							((el.yMinMax[0] >=
-								wordInputNew.yMinMax[0] + translationYnew &&
-								el.yMinMax[0] <=
-									wordInputNew.yMinMax[1] +
-										translationYnew) ||
-								(el.yMinMax[1] >=
-									wordInputNew.yMinMax[0] + translationYnew &&
-									el.yMinMax[1] <=
-										wordInputNew.yMinMax[1] +
-											translationYnew))) ||
-						(((wordInputNew.xMinMax[0] + translationXnew >=
-							el.xMinMax[0] &&
-							wordInputNew.xMinMax[0] + translationXnew <=
-								el.xMinMax[1]) ||
-							(wordInputNew.xMinMax[1] + translationXnew >=
-								el.xMinMax[0] &&
-								wordInputNew.xMinMax[1] + translationXnew <=
-									el.xMinMax[1])) &&
-							((wordInputNew.yMinMax[0] + translationYnew >=
-								el.yMinMax[0] &&
-								wordInputNew.yMinMax[0] + translationYnew <=
-									el.yMinMax[1]) ||
-								(wordInputNew.yMinMax[1] + translationYnew >=
-									el.yMinMax[0] &&
-									wordInputNew.yMinMax[1] + translationYnew <=
-										el.yMinMax[1])))
-					);
-				}
-				if (wordInputNew.rotation === 1) {
-					return (
-						(((el.xMinMax[0] >=
-							wordInputNew.xMinMax[1] + translationXnew &&
-							el.xMinMax[0] <=
-								wordInputNew.xMinMax[0] + translationXnew) ||
-							(el.xMinMax[1] >=
-								wordInputNew.xMinMax[1] + translationXnew &&
-								el.xMinMax[1] <=
-									wordInputNew.xMinMax[0] +
-										translationXnew)) &&
-							((el.yMinMax[0] >=
-								wordInputNew.yMinMax[0] + translationYnew &&
-								el.yMinMax[0] <=
-									wordInputNew.yMinMax[1] +
-										translationYnew) ||
-								(el.yMinMax[1] >=
-									wordInputNew.yMinMax[0] + translationYnew &&
-									el.yMinMax[1] <=
-										wordInputNew.yMinMax[1] +
-											translationYnew))) ||
-						(((wordInputNew.xMinMax[1] + translationXnew >=
-							el.xMinMax[0] &&
-							wordInputNew.xMinMax[1] + translationXnew <=
-								el.xMinMax[1]) ||
-							(wordInputNew.xMinMax[0] + translationXnew >=
-								el.xMinMax[0] &&
-								wordInputNew.xMinMax[0] + translationXnew <=
-									el.xMinMax[1])) &&
-							((wordInputNew.yMinMax[0] + translationYnew >=
-								el.yMinMax[0] &&
-								wordInputNew.yMinMax[0] + translationYnew <=
-									el.yMinMax[1]) ||
-								(wordInputNew.yMinMax[1] + translationYnew >=
-									el.yMinMax[0] &&
-									wordInputNew.yMinMax[1] + translationYnew <=
-										el.yMinMax[1])))
-					);
-				}
-			})
-		) {
-			spaceAvailable = false;
-		} else {
-			spaceAvailable = true;
-		}
-		// console.log('this translationX before checkingspace:', translationXnew);
-		// console.log('this translationY before checkingspace:', translationYnew);
-		return spaceAvailable;
+							el.xMinMax[1] <=
+								wordInputNew.xMinMax[1] + translationXnew))) ||
+				// // 5. Crossing X from right
+				(wordInputNew.xMinMax[0] + translationXnew >= el.xMinMax[0] &&
+					wordInputNew.xMinMax[0] + translationXnew <=
+						el.xMinMax[1] &&
+					((wordInputNew.yMinMax[0] + translationYnew >=
+						el.yMinMax[0] &&
+						wordInputNew.yMinMax[0] + translationYnew <=
+							el.yMinMax[1]) ||
+						(wordInputNew.yMinMax[1] + translationYnew >=
+							el.yMinMax[0] &&
+							wordInputNew.yMinMax[1] + translationYnew <=
+								el.yMinMax[1]))) ||
+				// 6. Crossing X from left
+				(wordInputNew.xMinMax[1] + translationXnew >= el.xMinMax[0] &&
+					wordInputNew.xMinMax[1] + translationXnew <=
+						el.xMinMax[1] &&
+					((wordInputNew.yMinMax[0] + translationYnew >=
+						el.yMinMax[0] &&
+						wordInputNew.yMinMax[0] + translationYnew <=
+							el.yMinMax[1]) ||
+						(wordInputNew.yMinMax[1] + translationYnew >=
+							el.yMinMax[0] &&
+							wordInputNew.yMinMax[1] + translationYnew <=
+								el.yMinMax[1])))
+		);
 	}
 	// Function placing checking by other components position
 	function checkingUp(data) {
 		function findingPosition() {
 			// Generating random translation mode
 			translationMode = getRandom(1, 9);
+
+			translationDone = 0;
 
 			function addingValues(translationX, translationY) {
 				wordInput.x = wordInput.x + translationX;
@@ -278,8 +263,8 @@ function main(arguments) {
 				wordInput.y = wordInput.y + translationY;
 				wordInput.yMinMax[0] = wordInput.yMinMax[0] + translationY;
 				wordInput.yMinMax[1] = wordInput.yMinMax[1] + translationY;
-				// console.log('this is translation X value added:', translationX);
-				// console.log('this is translation Y value added:', translationY);
+				console.log('this is translation X value added:', translationX);
+				console.log('this is translation Y value added:', translationY);
 			}
 
 			function checkingMargin(translationX, translationY, margin) {
@@ -303,7 +288,7 @@ function main(arguments) {
 					wordInput,
 					-Math.abs(translationX),
 					0
-				)
+				) === false
 			) {
 				addingValues(-Math.abs(translationX), 0);
 				translationDone = 1;
@@ -326,7 +311,7 @@ function main(arguments) {
 					wordInput,
 					-Math.abs(translationX),
 					Math.abs(translationY)
-				)
+				) === false
 			) {
 				addingValues(-Math.abs(translationX), Math.abs(translationY));
 
@@ -351,7 +336,7 @@ function main(arguments) {
 					wordInput,
 					Math.abs(translationX),
 					Math.abs(translationY)
-				)
+				) === false
 			) {
 				addingValues(Math.abs(translationX), Math.abs(translationY));
 
@@ -371,7 +356,7 @@ function main(arguments) {
 					wordInput,
 					Math.abs(translationX),
 					0
-				)
+				) === false
 			) {
 				addingValues(Math.abs(translationX), 0);
 
@@ -395,7 +380,7 @@ function main(arguments) {
 					wordInput,
 					-Math.abs(translationX),
 					-Math.abs(translationY)
-				)
+				) === false
 			) {
 				addingValues(-Math.abs(translationX), -Math.abs(translationY));
 
@@ -419,7 +404,7 @@ function main(arguments) {
 					wordInput,
 					Math.abs(translationX),
 					-Math.abs(translationY)
-				)
+				) === false
 			) {
 				addingValues(Math.abs(translationX), -Math.abs(translationY));
 
@@ -439,7 +424,7 @@ function main(arguments) {
 					wordInput,
 					0,
 					Math.abs(translationY)
-				)
+				) === false
 			) {
 				addingValues(0, Math.abs(translationY));
 
@@ -459,7 +444,7 @@ function main(arguments) {
 					wordInput,
 					0,
 					-Math.abs(translationY)
-				)
+				) === false
 			) {
 				addingValues(0, -Math.abs(translationY));
 
@@ -470,30 +455,33 @@ function main(arguments) {
 
 			if (translationDone === 1) {
 				resetTranslationValues();
-				findingCount = 0;
+				findingCycles = 0;
 			}
-
-			if (translationDone !== 1 && findingCount < 1000) {
-				translationRatioX = translationRatioX - 1;
-				translationRatioY = translationRatioY - 1;
+			// console.log('count:', findingCycles);
+			// console.log('translationX:', translationX);
+			// console.log('translationY:', translationY);
+			if (translationDone !== 1 && findingCycles < 1000) {
+				translationRatioX = translationRatioX - 0.5;
+				translationRatioY = translationRatioY - 0.2;
 				translationX = screenSize[0] / translationRatioX;
 				translationY = screenSize[1] / translationRatioY;
 
-				if (translationRatioX === 8) {
+				if (translationRatioX === 4) {
 					resetTranslationValues();
 				}
-				if (translationRatioY === 6) {
+				if (translationRatioY === 3) {
 					resetTranslationValues();
 				}
-				findingCount = findingCount + 1;
+				findingCycles = findingCycles + 1;
 				findingPosition();
 			}
 		}
-		if (findingCount < 1000) {
+		if (findingCycles < 1000 && translationDone !== 1) {
 			findingPosition();
 		}
 	}
-
+	console.log(wordsData);
+	console.log('this new wordInput:', wordInput);
 	// Function checking & adding word data
 	if (translationDone === 1 || wordsData.length === 1 || newValues === 1) {
 		var exportdata = {};
@@ -507,7 +495,6 @@ function main(arguments) {
 				this.rotation = rotation;
 			}
 		}
-
 		wordsData.forEach((el, index) => {
 			var wordExport = new WordExport();
 			exportdata['Word' + index] = wordExport;
@@ -533,6 +520,6 @@ function main(arguments) {
 
 		return display;
 	}
-	// console.log(wordsData);
 }
+
 main(['input0']);
