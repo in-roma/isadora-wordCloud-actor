@@ -96,52 +96,49 @@
 
 var wordsData = [];
 
-function main() {
-	// Set up
+function main(arguments) {
+	// Function Set up
+	// Word input Class
 	class WordClassElement {
 		constructor(word, fontSize, fontRatio, kerning, x, y, count, rotation) {
 			this.word = word;
+			this.rotation = rotation;
 			this.wordLength = this.word.length;
 			this.fontSize = fontSize;
 			this.fontRatio = fontRatio;
-			this.width = this.wordLength * this.fontSize * this.fontRatio;
-			this.height = this.fontSize;
-			this.x = this.randomPosition(700, 1220);
-			this.y = this.randomPosition(350, 550);
+			this.width = setWidth(this.rotation);
+			this.height = setHeight(this.rotation);
+			this.x = this.randomPosition(900, 1020);
+			this.y = this.randomPosition(500, 580);
 			this.xMinMax = [this.x, this.x + this.width];
 			this.yMinMax = [this.y, this.y + this.height];
 			this.kerning = kerning;
 			this.count = count;
-			this.rotation = rotation;
 		}
+		setWidth(rotation) {
+			if (rotation === 0) {
+				return this.wordLength * this.fontSize * this.fontRatio;
+			} else {
+				return this.fontSize;
+			}
+		}
+		setHeight(rotation) {
+			if (rotation === 0) {
+				return this.fontSize;
+			} else {
+				return this.wordLength * this.fontSize * this.fontRatio;
+			}
+		}
+
 		randomPosition(min, max) {
 			return Math.floor(Math.random() * (max - min) + min);
 		}
 	}
-	class WordClassRotationElement {
-		constructor(word, fontSize, fontRatio, kerning, x, y, count, rotation) {
-			this.word = word;
-			this.wordLength = this.word.length;
-			this.fontSize = fontSize;
-			this.fontRatio = fontRatio;
-			this.width = this.fontSize;
-			this.height = this.wordLength * this.fontSize * this.fontRatio;
-			this.x = this.randomPosition(700, 1220);
-			this.y = this.randomPosition(350, 550);
-			this.xMinMax = [this.x, this.x + this.width];
-			this.yMinMax = [this.y, this.y + this.height];
-			this.kerning = kerning;
-			this.count = count;
-			this.rotation = rotation;
-		}
-		randomPosition(min, max) {
-			return Math.floor(Math.random() * (max - min) + min);
-		}
-	}
+	// Functions main variables
 	var screenSize = [1920, 1080];
 	var currentWord = arguments[0];
-	var translationRatioX = 40;
-	var translationRatioY = 20;
+	var translationRatioX = 120;
+	var translationRatioY = 60;
 	var translationX = screenSize[0] / translationRatioX;
 	var translationY = screenSize[1] / translationRatioY;
 	var numberOfWordsCounted = 0;
@@ -149,18 +146,11 @@ function main() {
 	var translationDone = 0;
 	var newValues = 0;
 	var translationMode;
-	var count;
-	var wordInput = new WordClassElement(
-		currentWord,
-		42,
-		0.6,
-		0,
-		960,
-		540,
-		1,
-		0
-	);
+	var findingCount = 0;
+	var wordInput;
 	var margin = wordInput.fontSize * 2;
+
+	// Helpers
 	// Get random number
 	function getRandom(min, max) {
 		return Math.floor(Math.random() * (max - min) + min);
@@ -205,9 +195,9 @@ function main() {
 	}
 
 	// Random rotation position for word
-	var rotationTrue = getRandom(1, 7);
-	if (rotationTrue === 2) {
-		wordInput = new WordClassRotationElement(
+	var rotationTrue = getRandom(1, 5);
+	if (rotationTrue === 4) {
+		wordInput = new WordClassElement(
 			currentWord,
 			42,
 			0.6,
@@ -217,13 +207,25 @@ function main() {
 			1,
 			1
 		);
+	} else {
+		wordInput = new WordClassElement(
+			currentWord,
+			42,
+			0.6,
+			0,
+			960,
+			540,
+			1,
+			0
+		);
 	}
 
-	// Setting up new input word object
+	// New sequence - first item
 	if (wordsData.length === 0) {
 		wordsData.push(wordInput);
 	} else {
-		//Checking if word has already been passed
+		// After first item
+		// Checking if word has already been passed
 		wordsData.forEach((el) => {
 			if (el.word === arguments[0]) {
 				if (el.count < 4) {
@@ -243,6 +245,7 @@ function main() {
 					newValues = 1;
 				}
 			} else {
+				// Processing new word
 				checkingUp(wordsData);
 				newValues = 0;
 			}
@@ -251,9 +254,9 @@ function main() {
 
 	// Reset translations value
 	function resetTranslationValues() {
-		translationRatioX === 40;
+		translationRatioX === 120;
 		translationX = screenSize[0] / translationRatioX;
-		translationRatioY === 20;
+		translationRatioY === 60;
 		translationY = screenSize[0] / translationRatioY;
 	}
 
@@ -267,41 +270,84 @@ function main() {
 	) {
 		if (
 			data.some(function (el) {
-				return (
-					(((el.xMinMax[0] >=
-						wordInputNew.xMinMax[0] + translationXnew &&
-						el.xMinMax[0] <=
-							wordInputNew.xMinMax[1] + translationXnew) ||
-						(el.xMinMax[1] >=
+				if (wordInputNew.rotation === 0) {
+					return (
+						(((el.xMinMax[0] >=
 							wordInputNew.xMinMax[0] + translationXnew &&
-							el.xMinMax[1] <=
-								wordInputNew.xMinMax[1] + translationXnew)) &&
-						((el.yMinMax[0] >=
-							wordInputNew.yMinMax[0] + translationYnew &&
-							el.yMinMax[0] <=
-								wordInputNew.yMinMax[1] + translationYnew) ||
-							(el.yMinMax[1] >=
+							el.xMinMax[0] <=
+								wordInputNew.xMinMax[1] + translationXnew) ||
+							(el.xMinMax[1] >=
+								wordInputNew.xMinMax[0] + translationXnew &&
+								el.xMinMax[1] <=
+									wordInputNew.xMinMax[1] +
+										translationXnew)) &&
+							((el.yMinMax[0] >=
 								wordInputNew.yMinMax[0] + translationYnew &&
-								el.yMinMax[1] <=
+								el.yMinMax[0] <=
 									wordInputNew.yMinMax[1] +
-										translationYnew))) ||
-					(((wordInputNew.xMinMax[0] + translationXnew >=
-						el.xMinMax[0] &&
-						wordInputNew.xMinMax[0] + translationXnew <=
-							el.xMinMax[1]) ||
-						(wordInputNew.xMinMax[1] + translationXnew >=
+										translationYnew) ||
+								(el.yMinMax[1] >=
+									wordInputNew.yMinMax[0] + translationYnew &&
+									el.yMinMax[1] <=
+										wordInputNew.yMinMax[1] +
+											translationYnew))) ||
+						(((wordInputNew.xMinMax[0] + translationXnew >=
+							el.xMinMax[0] &&
+							wordInputNew.xMinMax[0] + translationXnew <=
+								el.xMinMax[1]) ||
+							(wordInputNew.xMinMax[1] + translationXnew >=
+								el.xMinMax[0] &&
+								wordInputNew.xMinMax[1] + translationXnew <=
+									el.xMinMax[1])) &&
+							((wordInputNew.yMinMax[0] + translationYnew >=
+								el.yMinMax[0] &&
+								wordInputNew.yMinMax[0] + translationYnew <=
+									el.yMinMax[1]) ||
+								(wordInputNew.yMinMax[1] + translationYnew >=
+									el.yMinMax[0] &&
+									wordInputNew.yMinMax[1] + translationYnew <=
+										el.yMinMax[1])))
+					);
+				}
+				if (wordInputNew.rotation === 1) {
+					return (
+						(((el.xMinMax[0] >=
+							wordInputNew.xMinMax[1] + translationXnew &&
+							el.xMinMax[0] <=
+								wordInputNew.xMinMax[0] + translationXnew) ||
+							(el.xMinMax[1] >=
+								wordInputNew.xMinMax[1] + translationXnew &&
+								el.xMinMax[1] <=
+									wordInputNew.xMinMax[0] +
+										translationXnew)) &&
+							((el.yMinMax[0] >=
+								wordInputNew.yMinMax[0] + translationYnew &&
+								el.yMinMax[0] <=
+									wordInputNew.yMinMax[1] +
+										translationYnew) ||
+								(el.yMinMax[1] >=
+									wordInputNew.yMinMax[0] + translationYnew &&
+									el.yMinMax[1] <=
+										wordInputNew.yMinMax[1] +
+											translationYnew))) ||
+						(((wordInputNew.xMinMax[1] + translationXnew >=
 							el.xMinMax[0] &&
 							wordInputNew.xMinMax[1] + translationXnew <=
-								el.xMinMax[1])) &&
-						((wordInputNew.yMinMax[0] + translationYnew >=
-							el.yMinMax[0] &&
-							wordInputNew.yMinMax[0] + translationYnew <=
-								el.yMinMax[1]) ||
-							(wordInputNew.yMinMax[1] + translationYnew >=
+								el.xMinMax[1]) ||
+							(wordInputNew.xMinMax[0] + translationXnew >=
+								el.xMinMax[0] &&
+								wordInputNew.xMinMax[0] + translationXnew <=
+									el.xMinMax[1])) &&
+							((wordInputNew.yMinMax[0] + translationYnew >=
 								el.yMinMax[0] &&
-								wordInputNew.yMinMax[1] + translationYnew <=
-									el.yMinMax[1])))
-				);
+								wordInputNew.yMinMax[0] + translationYnew <=
+									el.yMinMax[1]) ||
+								(wordInputNew.yMinMax[1] + translationYnew >=
+									el.yMinMax[0] &&
+									wordInputNew.yMinMax[1] + translationYnew <=
+										el.yMinMax[1])))
+					);
+				}
 			})
 		) {
 			spaceAvailable = false;
@@ -314,10 +360,8 @@ function main() {
 	}
 	// Function placing checking by other components position
 	function checkingUp(data) {
-		count = 0;
 		function findingPosition() {
 			// Generating random translation mode
-
 			translationMode = getRandom(1, 9);
 
 			function addingValues(translationX, translationY) {
@@ -520,26 +564,26 @@ function main() {
 
 			if (translationDone === 1) {
 				resetTranslationValues();
-				count = 0;
+				findingCount = 0;
 			}
 
-			if (translationDone !== 1 && count < 2) {
-				translationRatioX = translationRatioX - 2;
-				translationRatioY = translationRatioY - 0.5;
+			if (translationDone !== 1 && findingCount < 1000) {
+				translationRatioX = translationRatioX - 1;
+				translationRatioY = translationRatioY - 1;
 				translationX = screenSize[0] / translationRatioX;
 				translationY = screenSize[1] / translationRatioY;
 
-				if (translationRatioX === 4) {
+				if (translationRatioX === 8) {
 					resetTranslationValues();
 				}
-				if (translationRatioY === 3) {
+				if (translationRatioY === 6) {
 					resetTranslationValues();
 				}
+				findingCount = findingCount + 1;
 				findingPosition();
-				count = count + 1;
 			}
 		}
-		if (count < 2) {
+		if (findingCount < 1000) {
 			findingPosition();
 		}
 	}
