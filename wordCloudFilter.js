@@ -3,6 +3,7 @@ var wordsData = [];
 var minChars = 4;
 var maxChars = 10;
 var maxWords = 4;
+var reformatCaseMode = 1;
 var screenSize = [1920, 1080];
 var fontSizeSelected = 42;
 
@@ -18,8 +19,9 @@ function main(arguments) {
 	minChars = arguments[1];
 	maxChars = arguments[2];
 	maxWords = arguments[3];
-	screenSize = [arguments[4], arguments[5]];
-	fontSizeSelected = arguments[6];
+	reformatCaseMode = arguments[4];
+	screenSize = [arguments[5], arguments[6]];
+	fontSizeSelected = arguments[7];
 	var wordInput;
 	var translationRatioX = 80;
 	var translationRatioY = 40;
@@ -27,7 +29,7 @@ function main(arguments) {
 	var translationY = screenSize[1] / translationRatioY;
 	var numberOfWordsCounted = 0;
 	var exportdataStringified;
-	var translationDone;
+	var translationDone = 0;
 	var newValues = 0;
 	var translationMode;
 	var findingCycles = 0;
@@ -42,8 +44,8 @@ function main(arguments) {
 			this.fontRatio = fontRatio;
 			this.width = this.setWidth(this.rotation);
 			this.height = this.setHeight(this.rotation);
-			this.x = x;
-			this.y = y;
+			this.x = getRandom(screenSize[0] * 0.3, screenSize[0] * 0.7);
+			this.y = getRandom(screenSize[1] * 0.45, screenSize[1] * 0.5);
 			this.xMinMax = [this.x, this.x + this.width];
 			this.yMinMax = [this.y, this.y + this.height];
 			this.kerning = kerning;
@@ -67,7 +69,15 @@ function main(arguments) {
 			return Math.floor(Math.random() * (max - min) + min);
 		}
 	}
-	console.log('this is wordRawState:', wordRawState);
+	// Formating case
+	if (reformatCaseMode === 1) {
+		wordRawState = wordRawState.toLowerCase();
+	}
+
+	if (reformatCaseMode === 2) {
+		wordRawState = wordRawState.toUpperCase();
+	}
+
 	// Filter word input according to number of characters & number of words
 	inputWord = wordRawState
 		.split(' ')
@@ -107,7 +117,7 @@ function main(arguments) {
 			1
 		);
 	}
-	var margin = fontSizeSelected * 1.5;
+	var margin = fontSizeSelected * 2.5;
 
 	// Sequence - is first item ?
 	if (wordsData.length === 0) {
@@ -283,8 +293,6 @@ function main(arguments) {
 		function findingPosition() {
 			// Generating random translation mode
 			translationMode = getRandom(1, 9);
-
-			translationDone = 0;
 
 			function addingValues(translationX, translationY) {
 				wordInput.x = wordInput.x + translationX;
@@ -492,8 +500,8 @@ function main(arguments) {
 			// console.log('translationX:', translationX);
 			// console.log('translationY:', translationY);
 			if (translationDone !== 1 && findingCycles < 1000) {
-				translationRatioX = translationRatioX - 0.5;
-				translationRatioY = translationRatioY - 0.2;
+				translationRatioX = translationRatioX - 5;
+				translationRatioY = translationRatioY - 2;
 				translationX = screenSize[0] / translationRatioX;
 				translationY = screenSize[1] / translationRatioY;
 
@@ -507,7 +515,7 @@ function main(arguments) {
 				findingPosition();
 			}
 		}
-		if (findingCycles < 1000 && translationDone !== 1) {
+		if (findingCycles < 500 && translationDone !== 1) {
 			findingPosition();
 		}
 	}
@@ -545,22 +553,22 @@ function main(arguments) {
 			arguments[1],
 			arguments[2],
 			arguments[3],
-			arguments[4],
-			arguments[5],
-			arguments[6],
 			numberOfWordsCounted,
+			arguments[6],
+			arguments[7],
 			exportdataStringified,
+			wordsData.length,
 		];
 		inputWord = '';
 		return display;
 	}
 }
-
 main([
 	'this is an awesome question and beautiful spirit',
 	5,
 	10,
 	3,
+	1,
 	1920,
 	1080,
 	42,
