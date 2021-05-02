@@ -463,7 +463,7 @@ function main(arguments) {
 				data.push(wordInput);
 				console.log('new word mode7-Up');
 			} else {
-				translationMode === 8;
+				translationMode = 8;
 			}
 			// Translation Down - 8
 			if (
