@@ -13,6 +13,25 @@ function getRandom(min, max) {
 
 function main() {
 	// Function Set up
+	// Main variables
+	var inputWord = arguments[0];
+	minChars = arguments[1];
+	maxChars = arguments[2];
+	maxWords = arguments[3];
+	screenSize = [arguments[4], arguments[5]];
+	var currentWord;
+	var translationRatioX = 80;
+	var translationRatioY = 40;
+	var translationX = screenSize[0] / translationRatioX;
+	var translationY = screenSize[1] / translationRatioY;
+	var numberOfWordsCounted = 0;
+	var exportdataStringified;
+	var translationDone;
+	var newValues = 0;
+	var translationMode;
+	var findingCycles = 0;
+	var wordInput;
+
 	// WordInput Class
 	class WordClassElement {
 		constructor(word, fontSize, fontRatio, kerning, x, y, count, rotation) {
@@ -48,28 +67,9 @@ function main() {
 			return Math.floor(Math.random() * (max - min) + min);
 		}
 	}
-	// Main variables
-	var inputWord = arguments[0];
-	minChars = arguments[1];
-	maxChars = arguments[2];
-	maxWords = arguments[3];
-	screenSize = [arguments[4], arguments[5]];
-	var currentWord;
-	var translationRatioX = 80;
-	var translationRatioY = 40;
-	var translationX = screenSize[0] / translationRatioX;
-	var translationY = screenSize[1] / translationRatioY;
-	var numberOfWordsCounted = 0;
-	var exportdataStringified;
-	var translationDone;
-	var newValues = 0;
-	var translationMode;
-	var findingCycles = 0;
-	var wordInput;
 
 	// Filter word input according to number of characters & number of words
-
-	inputWord
+	currentWord = inputWord
 		.split(' ')
 		.filter(function (el) {
 			if (el.length >= minChars && el.length <= maxChars) {
@@ -78,8 +78,6 @@ function main() {
 		})
 		.filter((el, i) => i < maxWords)
 		.join(' ');
-
-	currentWord = inputWord;
 
 	// New sequence - first item either horizontal or vertical
 	// Random rotation position for word
@@ -541,9 +539,16 @@ function main() {
 			exportdataStringified,
 			arguments[4],
 		];
-
+		currentWord = '';
 		return display;
 	}
 }
 
-main(['input0', 4, 10, 5, 1920, 1080]);
+main([
+	'this is an awesome question and beautiful spirit',
+	5,
+	10,
+	5,
+	1920,
+	1080,
+]);
