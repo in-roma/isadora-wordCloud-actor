@@ -115,30 +115,35 @@ function main(arguments) {
 	} else {
 		// Not first item
 		// Checking if word has already been passed
-		wordsData.forEach((el) => {
-			if (el.word === inputWord) {
-				if (el.count < 4) {
+		var isAlreadyInDataBase = wordsData.every((el) => {
+			return el.word !== inputWord;
+		});
+
+		if (isAlreadyInDataBase === true) {
+			// Processing new word
+			checkingUp(wordsData);
+			newValues = 0;
+		} else {
+			// Processing existing word
+			wordsData.forEach(function (el) {
+				if (inputWord === el.word) {
 					el.count = el.count + 1;
 					console.log('same word count added:');
 				}
-				if (el.count === 2) {
+				if (el.count === 2 && inputWord === el.word) {
 					resizing(el, 1.3);
 
 					console.log('word with count:', el.word, el.count);
 					newValues = 1;
 				}
-				if (el.count === 3) {
+				if (el.count === 3 && inputWord === el.word) {
 					resizing(el, 1.2);
 
 					console.log('word with count:', el.word, el.count);
 					newValues = 1;
 				}
-			} else {
-				// Processing new word
-				checkingUp(wordsData);
-				newValues = 0;
-			}
-		});
+			});
+		}
 	}
 
 	// Resizing function
@@ -199,6 +204,7 @@ function main(arguments) {
 						el.yMinMax[0] &&
 					wordInputNew.yMinMax[1] + translationYnew >=
 						el.yMinMax[1]) ||
+				// 5. Reverse comparison el xMin whitin new word position range
 				(el.xMinMax[0] >= wordInputNew.xMinMax[0] + translationXnew &&
 					el.xMinMax[0] <=
 						wordInputNew.xMinMax[1] + translationXnew &&
@@ -210,6 +216,7 @@ function main(arguments) {
 							wordInputNew.yMinMax[0] + translationYnew &&
 							el.yMinMax[1] <=
 								wordInputNew.yMinMax[1] + translationYnew))) ||
+				// 6. Reverse comparison el xMax whitin new word position range
 				(el.xMinMax[1] >= wordInputNew.xMinMax[0] + translationXnew &&
 					el.xMinMax[1] <=
 						wordInputNew.xMinMax[1] + translationXnew &&
@@ -221,6 +228,7 @@ function main(arguments) {
 							wordInputNew.yMinMax[0] + translationYnew &&
 							el.yMinMax[1] <=
 								wordInputNew.yMinMax[1] + translationYnew))) ||
+				// 7. Reverse comparison el xMin whitin partly new word position range
 				(el.xMinMax[0] <= wordInputNew.xMinMax[0] + translationXnew &&
 					el.xMinMax[0] >=
 						wordInputNew.xMinMax[1] + translationXnew &&
@@ -232,6 +240,7 @@ function main(arguments) {
 							wordInputNew.yMinMax[0] + translationYnew &&
 							el.yMinMax[1] <=
 								wordInputNew.yMinMax[1] + translationYnew))) ||
+				// 8. Reverse comparison el yMinMax whitin partly new word position range
 				(el.yMinMax[0] <= wordInputNew.yMinMax[0] + translationYnew &&
 					el.yMinMax[0] >=
 						wordInputNew.yMinMax[1] + translationYnew &&
@@ -243,7 +252,7 @@ function main(arguments) {
 							wordInputNew.xMinMax[0] + translationXnew &&
 							el.xMinMax[1] <=
 								wordInputNew.xMinMax[1] + translationXnew))) ||
-				// // 5. Crossing X from right
+				// 9. Crossing X from right
 				(wordInputNew.xMinMax[0] + translationXnew >= el.xMinMax[0] &&
 					wordInputNew.xMinMax[0] + translationXnew <=
 						el.xMinMax[1] &&
@@ -255,7 +264,7 @@ function main(arguments) {
 							el.yMinMax[0] &&
 							wordInputNew.yMinMax[1] + translationYnew <=
 								el.yMinMax[1]))) ||
-				// 6. Crossing X from left
+				// 10. Crossing X from left
 				(wordInputNew.xMinMax[1] + translationXnew >= el.xMinMax[0] &&
 					wordInputNew.xMinMax[1] + translationXnew <=
 						el.xMinMax[1] &&
