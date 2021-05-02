@@ -1,4 +1,10 @@
+// Global variables - Default values
+
 var wordsData = [];
+var minChars = 4;
+var maxChars = 10;
+var maxWords = 4;
+var screenSize = [1920, 1080];
 
 // Helper Get random number
 function getRandom(min, max) {
@@ -43,8 +49,12 @@ function main() {
 		}
 	}
 	// Main variables
-	var screenSize = [1920, 1080];
-	var currentWord = arguments[0];
+	var inputWord = arguments[0];
+	minChars = arguments[1];
+	maxChars = arguments[2];
+	maxWords = arguments[3];
+	screenSize = [arguments[4], arguments[5]];
+	var currentWord;
 	var translationRatioX = 80;
 	var translationRatioY = 40;
 	var translationX = screenSize[0] / translationRatioX;
@@ -57,6 +67,20 @@ function main() {
 	var findingCycles = 0;
 	var wordInput;
 
+	// Filter word input according to number of characters & number of words
+
+	inputWord
+		.split(' ')
+		.filter(function (el) {
+			if (el.length >= minChars && el.length <= maxChars) {
+				return el;
+			}
+		})
+		.filter((el, i) => i < maxWords)
+		.join(' ');
+
+	currentWord = inputWord;
+
 	// New sequence - first item either horizontal or vertical
 	// Random rotation position for word
 	var rotationTrue = getRandom(1, 6);
@@ -67,8 +91,8 @@ function main() {
 			48,
 			0.9,
 			0,
-			960,
-			540,
+			screenSize[0] / 2,
+			screenSize[1] / 2,
 			1,
 			1
 		);
@@ -79,8 +103,8 @@ function main() {
 			48,
 			0.9,
 			0,
-			960,
-			540,
+			screenSize[0] / 2,
+			screenSize[1] / 2,
 			1,
 			0
 		);
@@ -522,4 +546,4 @@ function main() {
 	}
 }
 
-main(['input0']);
+main(['input0', 4, 10, 5, 1920, 1080]);
