@@ -157,9 +157,9 @@ function main(arguments) {
 
 	// Reset translations value
 	function resetTranslationValues() {
-		translationRatioX === 80;
+		translationRatioX = 80;
 		translationX = screenSize[0] / translationRatioX;
-		translationRatioY === 40;
+		translationRatioY = 40;
 		translationY = screenSize[0] / translationRatioY;
 	}
 
@@ -326,7 +326,7 @@ function main(arguments) {
 				data.push(wordInput);
 				console.log('new word mode1-left');
 			} else {
-				translationMode === 2;
+				translationMode = 2;
 			}
 			// Translation LeftUp - 2
 			if (
@@ -351,7 +351,7 @@ function main(arguments) {
 
 				console.log('new word mode2-leftUp');
 			} else {
-				translationMode === 3;
+				translationMode = 3;
 			}
 			// Translation UpRight - 3
 			if (
@@ -375,7 +375,7 @@ function main(arguments) {
 				data.push(wordInput);
 				console.log('new word mode3-UpRight');
 			} else {
-				translationMode === 4;
+				translationMode = 4;
 			}
 			// Translation Right - 4
 			if (
@@ -395,7 +395,7 @@ function main(arguments) {
 				data.push(wordInput);
 				console.log('new word mode4-Right');
 			} else {
-				translationMode === 5;
+				translationMode = 5;
 			}
 			// Translation LeftDown - 5
 			if (
@@ -419,7 +419,7 @@ function main(arguments) {
 				data.push(wordInput);
 				console.log('new word mode5-LeftDown');
 			} else {
-				translationMode === 6;
+				translationMode = 6;
 			}
 			// Translation RightDown - 6
 			if (
@@ -443,7 +443,7 @@ function main(arguments) {
 				data.push(wordInput);
 				console.log('new word mode6-RightDown');
 			} else {
-				translationMode === 7;
+				translationMode = 7;
 			}
 			// Translation UP - 7
 			if (
