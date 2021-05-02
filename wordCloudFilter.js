@@ -1,25 +1,26 @@
 // Global variables - Default values
-
 var wordsData = [];
 var minChars = 4;
 var maxChars = 10;
 var maxWords = 4;
 var screenSize = [1920, 1080];
+var fontSizeSelected = 42;
 
 // Helper Get random number
 function getRandom(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
 }
 
-function main() {
+function main(arguments) {
 	// Function Set up
 	// Main variables
-	var inputWord = arguments[0];
+	var wordRawState = arguments[0];
 	minChars = arguments[1];
 	maxChars = arguments[2];
 	maxWords = arguments[3];
 	screenSize = [arguments[4], arguments[5]];
-	var currentWord;
+	fontSizeSelected = arguments[6];
+	var wordInput;
 	var translationRatioX = 80;
 	var translationRatioY = 40;
 	var translationX = screenSize[0] / translationRatioX;
@@ -30,11 +31,10 @@ function main() {
 	var newValues = 0;
 	var translationMode;
 	var findingCycles = 0;
-	var wordInput;
 
 	// WordInput Class
 	class WordClassElement {
-		constructor(word, fontSize, fontRatio, kerning, x, y, count, rotation) {
+		constructor(word, fontSize, fontRatio, kerning, x, y, rotation, count) {
 			this.word = word;
 			this.rotation = rotation;
 			this.wordLength = this.word.length;
@@ -42,8 +42,8 @@ function main() {
 			this.fontRatio = fontRatio;
 			this.width = this.setWidth(this.rotation);
 			this.height = this.setHeight(this.rotation);
-			this.x = this.randomPosition(860, 1060);
-			this.y = this.randomPosition(380, 700);
+			this.x = x;
+			this.y = y;
 			this.xMinMax = [this.x, this.x + this.width];
 			this.yMinMax = [this.y, this.y + this.height];
 			this.kerning = kerning;
@@ -67,9 +67,9 @@ function main() {
 			return Math.floor(Math.random() * (max - min) + min);
 		}
 	}
-
+	console.log('this is wordRawState:', wordRawState);
 	// Filter word input according to number of characters & number of words
-	currentWord = inputWord
+	inputWord = wordRawState
 		.split(' ')
 		.filter(function (el) {
 			if (el.length >= minChars && el.length <= maxChars) {
@@ -85,8 +85,8 @@ function main() {
 	// Vertical word
 	if (rotationTrue === 1) {
 		wordInput = new WordClassElement(
-			currentWord,
-			48,
+			inputWord,
+			fontSizeSelected,
 			0.9,
 			0,
 			screenSize[0] / 2,
@@ -97,17 +97,17 @@ function main() {
 	} else {
 		// Vertical Horizontal
 		wordInput = new WordClassElement(
-			currentWord,
-			48,
+			inputWord,
+			fontSizeSelected,
 			0.9,
 			0,
 			screenSize[0] / 2,
 			screenSize[1] / 2,
-			1,
-			0
+			0,
+			1
 		);
 	}
-	var margin = wordInput.fontSize * 2;
+	var margin = fontSizeSelected * 1.5;
 
 	// Sequence - is first item ?
 	if (wordsData.length === 0) {
@@ -116,7 +116,7 @@ function main() {
 		// Not first item
 		// Checking if word has already been passed
 		wordsData.forEach((el) => {
-			if (el.word === arguments[0]) {
+			if (el.word === inputWord) {
 				if (el.count < 4) {
 					el.count = el.count + 1;
 					console.log('same word count added:');
@@ -532,14 +532,17 @@ function main() {
 	var display = [];
 	if (translationDone === 1 || wordsData.length === 1 || newValues === 1) {
 		display = [
-			arguments[0],
+			inputWord,
 			arguments[1],
 			arguments[2],
+			arguments[3],
+			arguments[4],
+			arguments[5],
+			arguments[6],
 			numberOfWordsCounted,
 			exportdataStringified,
-			arguments[4],
 		];
-		currentWord = '';
+		inputWord = '';
 		return display;
 	}
 }
@@ -548,7 +551,8 @@ main([
 	'this is an awesome question and beautiful spirit',
 	5,
 	10,
-	5,
+	3,
 	1920,
 	1080,
+	42,
 ]);
