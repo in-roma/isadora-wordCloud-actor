@@ -44,8 +44,8 @@ function main() {
 			this.fontRatio = fontRatio;
 			this.width = this.setWidth(this.rotation);
 			this.height = this.setHeight(this.rotation);
-			this.x = getRandom(screenSize[0] * 0.05, screenSize[0] * 0.95);
-			this.y = getRandom(screenSize[1] * 0.45, screenSize[1] * 0.5);
+			this.x = getRandom(screenSize[0] * 0.15, screenSize[0] * 0.85);
+			this.y = getRandom(screenSize[1] * 0.4, screenSize[1] * 0.6);
 			this.xMinMax = [this.x, this.x + this.width];
 			this.yMinMax = [this.y, this.y + this.height];
 			this.kerning = kerning;
@@ -70,8 +70,6 @@ function main() {
 		}
 	}
 	// Formating case
-
-	wordRawState = '  ' + wordRawState;
 	if (reformatCaseMode === 1) {
 		wordRawState = wordRawState.toLowerCase();
 	}
@@ -93,13 +91,13 @@ function main() {
 
 	// New sequence - first item either horizontal or vertical
 	// Random rotation position for word
-	var rotationTrue = getRandom(1, 5);
+	var rotationTrue = getRandom(1, 6);
 	// Vertical word
 	if (rotationTrue === 1) {
 		wordInput = new WordClassElement(
 			inputWord,
 			fontSizeSelected,
-			0.9,
+			1.1,
 			0,
 			screenSize[0] / 2,
 			screenSize[1] / 2,
@@ -119,7 +117,7 @@ function main() {
 			1
 		);
 	}
-	var margin = fontSizeSelected * 2.5;
+	var margin = fontSizeSelected / 2;
 
 	// Sequence - is first item ?
 	if (wordsData.length === 0) {
@@ -140,18 +138,13 @@ function main() {
 			wordsData.forEach(function (el) {
 				if (inputWord === el.word) {
 					el.count = el.count + 1;
-					console.log('same word count added:');
 				}
 				if (el.count === 2 && inputWord === el.word) {
-					resizing(el, 1.3);
-
-					console.log('word with count:', el.word, el.count);
+					resizing(el, 1.2);
 					newValues = 1;
 				}
 				if (el.count === 3 && inputWord === el.word) {
-					resizing(el, 1.2);
-
-					console.log('word with count:', el.word, el.count);
+					resizing(el, 1.3);
 					newValues = 1;
 				}
 			});
@@ -166,7 +159,6 @@ function main() {
 		word.xMinMax[1] = word.xMinMax[1] * factor;
 		word.yMinMax[1] = word.yMinMax[1] * factor;
 	}
-
 	// Reset translations value
 	function resetTranslationValues() {
 		translationRatioX = 100;
@@ -174,7 +166,6 @@ function main() {
 		translationRatioY = 50;
 		translationY = screenSize[0] / translationRatioY;
 	}
-
 	// Function to check available space used by findingPosition()
 	function checkingAvailableSpace(
 		data,
@@ -294,7 +285,7 @@ function main() {
 	function checkingUp(data) {
 		function findingPosition() {
 			// Generating random translation mode
-			translationMode = getRandom(1, 4);
+			translationMode = getRandom(1, 8);
 
 			function addingValues(translationX, translationY) {
 				wordInput.x = wordInput.x + translationX;
@@ -304,8 +295,6 @@ function main() {
 				wordInput.y = wordInput.y + translationY;
 				wordInput.yMinMax[0] = wordInput.yMinMax[0] + translationY;
 				wordInput.yMinMax[1] = wordInput.yMinMax[1] + translationY;
-				console.log('this is translation X value added:', translationX);
-				console.log('this is translation Y value added:', translationY);
 			}
 
 			function checkingMargin(translationX, translationY, margin) {
@@ -313,12 +302,11 @@ function main() {
 					wordInput.xMinMax[0] + translationX > margin &&
 					wordInput.xMinMax[1] + translationX <
 						screenSize[0] - margin &&
-					wordInput.yMinMax[0] + translationY <
-						screenSize[1] - margin &&
-					wordInput.yMinMax[1] + translationY > margin;
+					wordInput.yMinMax[0] + translationY > margin &&
+					wordInput.yMinMax[1] + translationY <
+						screenSize[1] - margin;
 				return testingMargin;
 			}
-
 			// Translation Left- 1
 			if (
 				translationMode === 1 &&
@@ -334,7 +322,6 @@ function main() {
 				addingValues(-Math.abs(translationX), 0);
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('new word mode1-left');
 			} else {
 				translationMode = 2;
 			}
@@ -358,8 +345,6 @@ function main() {
 
 				translationDone = 1;
 				data.push(wordInput);
-
-				console.log('new word mode2-leftUp');
 			} else {
 				translationMode = 3;
 			}
@@ -383,7 +368,6 @@ function main() {
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('new word mode3-UpRight');
 			} else {
 				translationMode = 4;
 			}
@@ -403,7 +387,6 @@ function main() {
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('new word mode4-Right');
 			} else {
 				translationMode = 5;
 			}
@@ -427,7 +410,6 @@ function main() {
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('new word mode5-LeftDown');
 			} else {
 				translationMode = 6;
 			}
@@ -451,7 +433,6 @@ function main() {
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('new word mode6-RightDown');
 			} else {
 				translationMode = 7;
 			}
@@ -471,7 +452,6 @@ function main() {
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('new word mode7-Up');
 			} else {
 				translationMode = 8;
 			}
@@ -491,16 +471,13 @@ function main() {
 
 				translationDone = 1;
 				data.push(wordInput);
-				console.log('new word mode8-Down');
 			}
 
 			if (translationDone === 1) {
 				resetTranslationValues();
 				findingCycles = 0;
 			}
-			// console.log('count:', findingCycles);
-			// console.log('translationX:', translationX);
-			// console.log('translationY:', translationY);
+
 			if (translationDone !== 1 && findingCycles < 2100) {
 				translationRatioX = translationRatioX - 0.05;
 				translationRatioY = translationRatioY - 0.025;
@@ -522,8 +499,6 @@ function main() {
 			findingPosition();
 		}
 	}
-	console.log(wordsData);
-	console.log('this new wordInput:', wordInput);
 	// Function checking & adding word data
 	if (translationDone === 1 || wordsData.length === 1 || newValues === 1) {
 		var exportdata = {};
@@ -561,6 +536,7 @@ function main() {
 			arguments[7],
 			exportdataStringified,
 			1,
+			wordsData.length,
 		];
 		inputWord = '';
 		return display;
@@ -573,8 +549,9 @@ function main() {
 			numberOfWordsCounted,
 			arguments[6],
 			arguments[7],
+			exportdataStringified,
 			0,
-			0,
+			wordsData.length,
 		];
 		inputWord = '';
 		return display;
