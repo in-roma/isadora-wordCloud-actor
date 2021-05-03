@@ -12,7 +12,7 @@ function getRandom(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
 }
 
-function main(arguments) {
+function main() {
 	// Function Set up
 	// Main variables
 	var wordRawState = arguments[0];
@@ -23,8 +23,8 @@ function main(arguments) {
 	screenSize = [arguments[5], arguments[6]];
 	fontSizeSelected = arguments[7];
 	var wordInput;
-	var translationRatioX = 80;
-	var translationRatioY = 40;
+	var translationRatioX = 100;
+	var translationRatioY = 50;
 	var translationX = screenSize[0] / translationRatioX;
 	var translationY = screenSize[1] / translationRatioY;
 	var numberOfWordsCounted = 0;
@@ -44,7 +44,7 @@ function main(arguments) {
 			this.fontRatio = fontRatio;
 			this.width = this.setWidth(this.rotation);
 			this.height = this.setHeight(this.rotation);
-			this.x = getRandom(screenSize[0] * 0.3, screenSize[0] * 0.7);
+			this.x = getRandom(screenSize[0] * 0.05, screenSize[0] * 0.95);
 			this.y = getRandom(screenSize[1] * 0.45, screenSize[1] * 0.5);
 			this.xMinMax = [this.x, this.x + this.width];
 			this.yMinMax = [this.y, this.y + this.height];
@@ -70,6 +70,8 @@ function main(arguments) {
 		}
 	}
 	// Formating case
+
+	wordRawState = '  ' + wordRawState;
 	if (reformatCaseMode === 1) {
 		wordRawState = wordRawState.toLowerCase();
 	}
@@ -91,7 +93,7 @@ function main(arguments) {
 
 	// New sequence - first item either horizontal or vertical
 	// Random rotation position for word
-	var rotationTrue = getRandom(1, 6);
+	var rotationTrue = getRandom(1, 5);
 	// Vertical word
 	if (rotationTrue === 1) {
 		wordInput = new WordClassElement(
@@ -105,11 +107,11 @@ function main(arguments) {
 			1
 		);
 	} else {
-		// Vertical Horizontal
+		// Horizontal word
 		wordInput = new WordClassElement(
 			inputWord,
 			fontSizeSelected,
-			0.9,
+			1.1,
 			0,
 			screenSize[0] / 2,
 			screenSize[1] / 2,
@@ -167,9 +169,9 @@ function main(arguments) {
 
 	// Reset translations value
 	function resetTranslationValues() {
-		translationRatioX = 80;
+		translationRatioX = 100;
 		translationX = screenSize[0] / translationRatioX;
-		translationRatioY = 40;
+		translationRatioY = 50;
 		translationY = screenSize[0] / translationRatioY;
 	}
 
@@ -292,7 +294,7 @@ function main(arguments) {
 	function checkingUp(data) {
 		function findingPosition() {
 			// Generating random translation mode
-			translationMode = getRandom(1, 9);
+			translationMode = getRandom(1, 4);
 
 			function addingValues(translationX, translationY) {
 				wordInput.x = wordInput.x + translationX;
@@ -499,23 +501,24 @@ function main(arguments) {
 			// console.log('count:', findingCycles);
 			// console.log('translationX:', translationX);
 			// console.log('translationY:', translationY);
-			if (translationDone !== 1 && findingCycles < 1000) {
-				translationRatioX = translationRatioX - 5;
-				translationRatioY = translationRatioY - 2;
+			if (translationDone !== 1 && findingCycles < 2100) {
+				translationRatioX = translationRatioX - 0.05;
+				translationRatioY = translationRatioY - 0.025;
+
 				translationX = screenSize[0] / translationRatioX;
 				translationY = screenSize[1] / translationRatioY;
 
-				if (translationRatioX === 4) {
+				if (translationRatioX === 1) {
 					resetTranslationValues();
 				}
-				if (translationRatioY === 3) {
+				if (translationRatioY === 1) {
 					resetTranslationValues();
 				}
 				findingCycles = findingCycles + 1;
 				findingPosition();
 			}
 		}
-		if (findingCycles < 500 && translationDone !== 1) {
+		if (findingCycles < 2100 && translationDone !== 1) {
 			findingPosition();
 		}
 	}
@@ -557,7 +560,21 @@ function main(arguments) {
 			arguments[6],
 			arguments[7],
 			exportdataStringified,
-			wordsData.length,
+			1,
+		];
+		inputWord = '';
+		return display;
+	} else {
+		display = [
+			inputWord,
+			arguments[1],
+			arguments[2],
+			arguments[3],
+			numberOfWordsCounted,
+			arguments[6],
+			arguments[7],
+			0,
+			0,
 		];
 		inputWord = '';
 		return display;
