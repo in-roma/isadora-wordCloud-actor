@@ -12,7 +12,7 @@ function getRandom(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
 }
 
-function main() {
+function main(arguments) {
 	// Function Set up
 	// Main variables
 	var wordRawState = arguments[0];
@@ -532,8 +532,8 @@ function main() {
 			arguments[2],
 			arguments[3],
 			numberOfWordsCounted,
+			arguments[5],
 			arguments[6],
-			arguments[7],
 			exportdataStringified,
 			1,
 			wordsData.length,
@@ -547,8 +547,8 @@ function main() {
 			arguments[2],
 			arguments[3],
 			numberOfWordsCounted,
+			arguments[5],
 			arguments[6],
-			arguments[7],
 			exportdataStringified,
 			0,
 			wordsData.length,
